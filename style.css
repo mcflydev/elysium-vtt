@@ -1,0 +1,1850 @@
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #3a0d12 0%,
+            #160609 35%,
+            #080304 75%
+        );
+
+    color: #e8e8e8;
+
+    font-family:
+        "Cinzel",
+        "Albert Sans",
+        sans-serif;
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+.title-container {
+    width: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 25px 40px 15px;
+}
+
+.title-container h1 {
+    color: #d45a68;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    letter-spacing: 3px;
+    line-height: 1.3;
+
+    text-transform: uppercase;
+    text-align: center;
+
+    text-shadow:
+        0 0 10px rgba(160, 25, 40, 0.3);
+
+    margin: 0 0 10px;
+}
+
+.title-container p {
+    color: #c5aeb1;
+
+    font-size: 12px;
+    font-weight: 400;
+
+    letter-spacing: 2px;
+    line-height: 1.4;
+
+    text-transform: uppercase;
+    text-align: center;
+
+    margin: 0 0 18px;
+}
+
+
+/* =========================================================
+   LINHAS DO TÍTULO
+   ========================================================= */
+
+.title-container hr {
+    width: 100%;
+    max-width: 900px;
+
+    border: none;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            to right,
+            transparent,
+            #6e1b24,
+            #b83a48,
+            #6e1b24,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   DADOS DO PERSONAGEM
+   ========================================================= */
+
+.char-profile-container {
+    margin: 20px 40px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+}
+
+
+/* =========================================================
+   CAIXAS DOS CAMPOS
+   ========================================================= */
+
+.campo {
+    background:
+        rgba(20, 5, 8, 0.78);
+
+    border: 1px solid #6e1b24;
+    border-radius: 8px;
+
+    padding: 8px 11px;
+
+    height: 52px;
+
+    display: flex;
+    flex-direction: column;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+
+    box-shadow:
+        0 2px 10px rgba(120, 15, 25, 0.12);
+}
+
+.campo:hover {
+    border-color: #a52a38;
+
+    background:
+        rgba(35, 7, 11, 0.9);
+}
+
+.campo:focus-within {
+    border-color: #c0394a;
+
+    box-shadow:
+        0 0 12px rgba(160, 25, 40, 0.22);
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.campo label {
+    color: #d45a68;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+    line-height: 1.2;
+
+    text-transform: uppercase;
+
+    margin-bottom: 4px;
+}
+
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+.campo input {
+    flex: 1;
+
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #eeeeee;
+
+    font-family: inherit;
+
+    font-size: 15px;
+    font-weight: 400;
+
+    padding: 0;
+}
+
+.campo input::placeholder {
+    color: #90777b;
+}
+
+
+/* =========================================================
+   ATRIBUTOS
+   ========================================================= */
+
+.character-stats {
+    margin: 25px 40px;
+}
+
+.character-stats-container {
+    width: 100%;
+}
+
+
+/* =========================================================
+   GRUPO DE ATRIBUTOS
+   ========================================================= */
+
+.stats-group {
+    background:
+        rgba(20, 5, 8, 0.78);
+
+    border: 1px solid #6e1b24;
+    border-radius: 8px;
+
+    padding: 15px 20px;
+}
+
+
+/* =========================================================
+   TÍTULO DOS ATRIBUTOS
+   ========================================================= */
+
+.stats-group h2 {
+    color: #d45a68;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+    text-align: center;
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   TRÊS COLUNAS
+   ========================================================= */
+
+.attributes {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 30px;
+
+    border-top: 1px solid #6e1b24;
+
+    padding-top: 15px;
+}
+
+
+/* =========================================================
+   CATEGORIA
+   ========================================================= */
+
+.attribute-category {
+    width: 100%;
+}
+
+.attribute-category h3 {
+    color: #b83a48;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 8px;
+}
+
+
+/* =========================================================
+   ATRIBUTO
+   ========================================================= */
+
+.attribute {
+    display: grid;
+
+    grid-template-columns:
+        1fr auto;
+
+    align-items: center;
+
+    min-height: 32px;
+
+    padding: 3px 0;
+}
+
+.attribute > span {
+    color: #eeeeee;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   BOLINHAS
+   ========================================================= */
+
+.dots {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-left: 10px;
+}
+
+
+/* =========================================================
+   BOTÃO / BOLINHA
+   ========================================================= */
+
+.dots button {
+    width: 13px;
+    height: 13px;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    border: 1px solid #a52a38;
+    border-radius: 50%;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+}
+
+.dots button:hover {
+    background:
+        rgba(165, 42, 56, 0.45);
+
+    border-color: #c0394a;
+
+    box-shadow:
+        0 0 5px rgba(192, 57, 74, 0.35);
+
+    transform: scale(1.08);
+}
+
+.dots button.active {
+    background: #a52a38;
+
+    border-color: #c0394a;
+
+    box-shadow:
+        0 0 5px rgba(192, 57, 74, 0.4);
+}
+
+.dots button:focus-visible {
+    outline: 1px solid #d45a68;
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   RECURSOS
+   ========================================================= */
+
+.character-resources {
+    margin: 25px 40px;
+}
+
+.resources-container {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   CAIXA DO RECURSO
+   ========================================================= */
+
+.resource {
+    background:
+        rgba(20, 5, 8, 0.78);
+
+    border: 1px solid #6e1b24;
+    border-radius: 8px;
+
+    padding: 15px 20px;
+
+    box-shadow:
+        0 2px 10px rgba(120, 15, 25, 0.12);
+}
+
+.resource h3 {
+    color: #d45a68;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 12px;
+}
+
+
+/* =========================================================
+   TRILHA DE DANO
+   ========================================================= */
+
+.damage-track {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    flex-wrap: wrap;
+
+    min-height: 28px;
+}
+
+
+/* =========================================================
+   QUADRADOS DE DANO
+   ========================================================= */
+
+.damage-box {
+    width: 27px;
+    height: 27px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #8e303b;
+
+    border-radius: 2px;
+
+    background:
+        rgba(8, 3, 4, 0.65);
+
+    color: transparent;
+
+    font-family:
+        "Albert Sans",
+        sans-serif;
+
+    font-size: 17px;
+    font-weight: 500;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    opacity: 1;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.damage-box:hover {
+    border-color: #b83a48;
+
+    background:
+        rgba(165, 42, 56, 0.08);
+
+    transform:
+        translateY(-1px)
+        scale(1.03);
+}
+
+.damage-box.superficial {
+    color: #d45a68;
+
+    background:
+        rgba(165, 42, 56, 0.08);
+
+    border-color: #a52a38;
+}
+
+.damage-box.agravado {
+    color: #eeeeee;
+
+    background:
+        rgba(58, 13, 18, 0.35);
+
+    border-color: #b83a48;
+
+    box-shadow:
+        inset 0 0 0 1px #6e1b24;
+}
+
+.damage-box:focus-visible {
+    outline: 1px solid #d45a68;
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   HABILIDADES
+   ========================================================= */
+
+.character-skills {
+    margin: 25px 40px;
+}
+
+.character-skills-container {
+    width: 100%;
+}
+
+
+/* =========================================================
+   GRUPO DE HABILIDADES
+   ========================================================= */
+
+.skills-group {
+    background:
+        rgba(20, 5, 8, 0.78);
+
+    border: 1px solid #6e1b24;
+    border-radius: 8px;
+
+    padding: 15px 20px;
+}
+
+.skills-group h2 {
+    color: #d45a68;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+    text-align: center;
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   TRÊS COLUNAS
+   ========================================================= */
+
+.skills {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 30px;
+
+    border-top: 1px solid #6e1b24;
+
+    padding-top: 15px;
+}
+
+
+/* =========================================================
+   CATEGORIA
+   ========================================================= */
+
+.skill-category {
+    width: 100%;
+}
+
+.skill-category h3 {
+    color: #b83a48;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+
+    margin-bottom: 8px;
+}
+
+
+/* =========================================================
+   HABILIDADE
+   ========================================================= */
+
+.skill {
+    display: grid;
+
+    grid-template-columns:
+        1fr auto;
+
+    align-items: center;
+
+    min-height: 32px;
+
+    padding: 3px 0;
+}
+
+.skill > span {
+    color: #eeeeee;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   PARTE DIREITA DA HABILIDADE
+   ========================================================= */
+
+.skill-right {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin-left: 18px;
+}
+
+
+/* =========================================================
+   ESPECIALIDADE
+   ========================================================= */
+
+.specialty {
+    width: 130px;
+
+    border: none;
+
+    border-bottom: 1px solid #6e1b24;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #eeeeee;
+
+    font-family:
+        "Albert Sans",
+        sans-serif;
+
+    font-size: 11px;
+
+    padding: 3px 5px;
+
+    transition:
+        border-color 0.2s ease,
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+.specialty::placeholder {
+    color: #765b60;
+
+    font-size: 10px;
+}
+
+.specialty:focus {
+    border-color: #c0394a;
+
+    color: #eeeeee;
+
+    background:
+        rgba(165, 42, 56, 0.04);
+}
+
+
+/* =========================================================
+   BOLINHAS DAS HABILIDADES
+   ========================================================= */
+
+.skill .dots {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-left: 2px;
+}
+
+
+/* =========================================================
+   DISCIPLINAS
+   ========================================================= */
+
+.character-disciplines {
+    margin: 25px 40px;
+}
+
+.disciplines-container {
+    width: 100%;
+}
+
+
+/* =========================================================
+   CABEÇALHO DAS DISCIPLINAS
+   ========================================================= */
+
+.disciplines-header {
+    background:
+        rgba(20, 5, 8, 0.78);
+
+    border: 1px solid #6e1b24;
+
+    border-radius: 8px;
+
+    padding: 15px 20px;
+
+    margin-bottom: 15px;
+}
+
+.disciplines-header h2 {
+    color: #d45a68;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   GRID DE DISCIPLINAS
+   ========================================================= */
+
+.disciplines-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 15px;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   CARD DA DISCIPLINA
+   ========================================================= */
+
+.discipline-card {
+    width: 100%;
+
+    min-height: 360px;
+
+    background:
+        rgba(20, 5, 8, 0.78);
+
+    border: 1px solid #6e1b24;
+
+    border-radius: 8px;
+
+    padding: 15px;
+
+    box-shadow:
+        0 2px 10px rgba(120, 15, 25, 0.12);
+}
+
+
+/* =========================================================
+   CABEÇALHO DA DISCIPLINA
+   ========================================================= */
+
+.discipline-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-height: 38px;
+
+    margin-bottom: 15px;
+
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #6e1b24;
+}
+
+
+/* =========================================================
+   NOME DA DISCIPLINA
+   ========================================================= */
+
+.discipline-name {
+    flex: 1;
+
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #eeeeee;
+
+    font-family: inherit;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+    padding: 4px 0;
+}
+
+.discipline-name::placeholder {
+    color: #90777b;
+}
+
+.discipline-name:focus {
+    color: #d45a68;
+}
+
+
+/* =========================================================
+   BOLINHAS DE NÍVEL
+   ========================================================= */
+
+.discipline-dots {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    flex-shrink: 0;
+}
+
+.discipline-dots button {
+    width: 17px;
+    height: 17px;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    border: 1px solid #a52a38;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+}
+
+.discipline-dots button:hover {
+    background:
+        rgba(165, 42, 56, 0.45);
+
+    border-color: #c0394a;
+
+    box-shadow:
+        0 0 6px rgba(192, 57, 74, 0.35);
+
+    transform: scale(1.08);
+}
+
+.discipline-dots button.active {
+    background: #a52a38;
+
+    border-color: #c0394a;
+
+    box-shadow:
+        0 0 6px rgba(192, 57, 74, 0.4);
+}
+
+
+/* =========================================================
+   BOTÃO DELETE
+   ========================================================= */
+
+.discipline-delete {
+    width: 25px;
+    height: 25px;
+
+    flex-shrink: 0;
+
+    border: 1px solid #6e1b24;
+
+    border-radius: 4px;
+
+    background:
+        rgba(8, 3, 4, 0.6);
+
+    color: #90777b;
+
+    font-size: 18px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.discipline-delete:hover {
+    color: #eeeeee;
+
+    border-color: #b83a48;
+
+    background:
+        rgba(165, 42, 56, 0.25);
+}
+
+
+/* =========================================================
+   HABILIDADES DA DISCIPLINA
+   ========================================================= */
+
+.discipline-powers {
+    width: 100%;
+}
+
+
+/* =========================================================
+   LINHA DA HABILIDADE
+   ========================================================= */
+
+.discipline-power {
+    display: flex;
+
+    align-items: center;
+
+    width: 100%;
+
+    min-height: 36px;
+
+    border-bottom:
+        1px solid rgba(110, 27, 36, 0.55);
+}
+
+
+/* =========================================================
+   NOME DA HABILIDADE
+   ========================================================= */
+
+.power-name {
+    flex: 1;
+
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #eeeeee;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    padding: 8px 4px;
+}
+
+.power-name::placeholder {
+    color: #90777b;
+}
+
+.power-name:focus {
+    color: #d45a68;
+}
+
+
+/* =========================================================
+   BOTÃO EXPANDIR
+   ========================================================= */
+
+.power-expand {
+    width: 28px;
+    height: 28px;
+
+    flex-shrink: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #b83a48;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease;
+}
+
+.power-expand:hover {
+    color: #d45a68;
+}
+
+
+/* =========================================================
+   DESCRIÇÃO
+   ========================================================= */
+
+.power-description {
+    display: none;
+
+    padding: 8px 4px 10px;
+}
+
+.power-description.open {
+    display: block;
+}
+
+
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
+
+.power-description textarea {
+    width: 100%;
+
+    min-height: 75px;
+
+    resize: vertical;
+
+    border: 1px solid #6e1b24;
+
+    border-radius: 4px;
+
+    outline: none;
+
+    background:
+        rgba(8, 3, 4, 0.55);
+
+    color: #eeeeee;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    padding: 8px;
+}
+
+.power-description textarea::placeholder {
+    color: #90777b;
+}
+
+.power-description textarea:focus {
+    border-color: #a52a38;
+
+    box-shadow:
+        0 0 8px rgba(160, 25, 40, 0.15);
+}
+
+
+/* =========================================================
+   BOTÃO +
+   ========================================================= */
+
+.add-discipline {
+    width: 52px;
+    height: 52px;
+
+    border: 1px solid #6e1b24;
+
+    border-radius: 8px;
+
+    background:
+        rgba(20, 5, 8, 0.78);
+
+    color: #b83a48;
+
+    font-size: 30px;
+    font-weight: 300;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.add-discipline:hover {
+    border-color: #b83a48;
+
+    background:
+        rgba(35, 7, 11, 0.9);
+
+    color: #d45a68;
+
+    transform: scale(1.03);
+}
+
+
+/* =========================================================
+   RECURSOS
+   FOME / HUMANIDADE / RESSONÂNCIA / MÁCULAS
+   ========================================================= */
+
+.recursos-linha {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-wrap: nowrap;
+
+    gap: 28px;
+
+    padding: 10px 20px;
+}
+
+
+/* =========================================================
+   ITEM DE RECURSO
+   ========================================================= */
+
+.recurso-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    white-space: nowrap;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   LABEL DOS RECURSOS
+   ========================================================= */
+
+.recurso-label {
+    color: #d45a68;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   RESSONÂNCIA
+   ========================================================= */
+
+.recurso-ressonancia {
+    display: flex;
+
+    align-items: center;
+
+    flex: 0 0 auto;
+
+    width: auto;
+}
+
+.ressonancia-input {
+    width: 120px;
+
+    flex: none;
+
+    border: none;
+
+    border-bottom: 1px solid #6e1b24;
+
+    outline: none;
+
+    background: transparent;
+
+    color: #eeeeee;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    padding: 3px 5px;
+}
+
+.ressonancia-input:focus {
+    border-bottom-color: #c0394a;
+}
+
+
+/* =========================================================
+   TRILHA — FOME / HUMANIDADE
+   ========================================================= */
+
+.recurso-trilha {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   HUMANIDADE — SEPARAÇÃO DOS GRUPOS
+   ========================================================= */
+
+.recurso-trilha--dupla
+.recurso-quadrado:nth-child(6) {
+    margin-left: 10px;
+}
+
+
+/* =========================================================
+   QUADRADOS DE FOME / HUMANIDADE
+   ========================================================= */
+
+.recurso-quadrado {
+    width: 15px;
+    height: 15px;
+
+    flex-shrink: 0;
+
+    padding: 0;
+    margin: 0;
+
+    border: 1px solid #a52a38;
+
+    border-radius: 2px;
+
+    background:
+        rgba(8, 3, 4, 0.65);
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.recurso-quadrado:hover {
+    border-color: #c0394a;
+
+    background:
+        rgba(165, 42, 56, 0.35);
+
+    box-shadow:
+        0 0 5px rgba(192, 57, 74, 0.35);
+
+    transform: scale(1.08);
+}
+
+
+/* =========================================================
+   QUADRADO ATIVO
+   ========================================================= */
+
+.recurso-quadrado.active {
+    background: #a52a38;
+
+    border-color: #c0394a;
+
+    box-shadow:
+        0 0 5px rgba(192, 57, 74, 0.4);
+}
+
+
+/* =========================================================
+   FOCO
+   ========================================================= */
+
+.recurso-quadrado:focus-visible {
+    outline: 1px solid #d45a68;
+
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   MÁCULAS
+   ========================================================= */
+
+.maculas-controle {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 0;
+
+    margin-left:20px;
+
+    white-space: nowrap;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   TEXTO "MÁCULAS"
+   ========================================================= */
+
+.maculas-controle span {
+    color: #d45a68;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   BOTÃO DE MÁCULA
+   ========================================================= */
+
+.maculas-controle button {
+    width: 20px;
+    height: 20px;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    border: 1px solid #6e1b24;
+
+    border-radius: 3px;
+
+    background:
+        rgba(8, 3, 4, 0.65);
+
+    color: #b83a48;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.maculas-controle button:hover {
+    border-color: #b83a48;
+
+    background:
+        rgba(165, 42, 56, 0.25);
+
+    color: #d45a68;
+
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   TRILHA DAS MÁCULAS
+   ========================================================= */
+
+/*
+   IMPORTANTE:
+
+   row-reverse faz a ordem visual começar pela direita.
+   Assim, quando o JS adiciona uma mácula, ela aparece
+   no lado direito e vai ocupando os espaços para a esquerda.
+*/
+
+.recurso-trilha--maculas {
+    display: flex;
+
+    flex-direction: row-reverse;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    gap: 5px;
+
+    white-space: nowrap;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   QUADRADO DE MÁCULA
+   ========================================================= */
+
+.recurso-quadrado.macula {
+    position: relative;
+
+    background:
+        rgba(8, 3, 4, 0.65);
+
+    border-color: #a52a38;
+}
+
+
+/* =========================================================
+   MARCA DA MÁCULA
+   ========================================================= */
+
+.recurso-quadrado.macula::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 2px;
+
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #a52a38,
+            #a52a38 1px,
+            transparent 1px,
+            transparent 3px
+        );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.delete-modal {
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(0, 0, 0, 0.72);
+
+    z-index: 9999;
+}
+
+.delete-modal.open {
+    display: flex;
+}
+
+
+/* =========================================================
+   CONTEÚDO DO MODAL
+   ========================================================= */
+
+.delete-modal-content {
+    width:
+        min(420px, calc(100% - 40px));
+
+    background:
+        rgba(20, 5, 8, 0.98);
+
+    border: 1px solid #6e1b24;
+
+    border-radius: 8px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.5);
+
+    text-align: center;
+}
+
+.delete-modal-content h3 {
+    color: #d45a68;
+
+    font-size: 14px;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   BOTÕES DO MODAL
+   ========================================================= */
+
+.delete-modal-buttons {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+}
+
+.delete-modal-buttons button {
+    min-width: 90px;
+
+    padding: 9px 18px;
+
+    border: 1px solid #6e1b24;
+
+    border-radius: 4px;
+
+    background:
+        rgba(8, 3, 4, 0.7);
+
+    color: #c5aeb1;
+
+    font-family: inherit;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.delete-modal-buttons button:hover {
+    border-color: #b83a48;
+
+    background:
+        rgba(165, 42, 56, 0.2);
+
+    color: #eeeeee;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE — 900px
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .disciplines-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .recursos-linha {
+        gap: 18px;
+    }
+
+    .ressonancia-input {
+        width: 105px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE — 800px
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .character-resources {
+        margin: 20px;
+    }
+
+    .resources-container {
+        grid-template-columns: 1fr;
+    }
+
+    .recursos-linha {
+        gap: 14px;
+
+        padding-left: 10px;
+        padding-right: 10px;
+
+        overflow-x: auto;
+
+        justify-content: center;
+    }
+
+    .recurso-item {
+        flex-shrink: 0;
+    }
+
+    .recurso-ressonancia {
+        flex: 0 0 auto;
+
+        width: auto;
+    }
+
+    .ressonancia-input {
+        width: 100px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE — 700px
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .char-profile-container {
+        margin: 20px;
+
+        grid-template-columns: 1fr;
+    }
+
+    .character-stats {
+        margin: 20px;
+    }
+
+    .attributes {
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+    }
+
+    .character-skills {
+        margin: 20px;
+    }
+
+    .skills {
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+    }
+
+    .character-disciplines {
+        margin: 20px;
+    }
+
+    .disciplines-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /*
+       NÃO colocamos os recursos em coluna.
+       Eles continuam na mesma linha.
+    */
+
+    .recursos-linha {
+        gap: 12px;
+
+        justify-content: center;
+
+        overflow-x: auto;
+    }
+
+    .recurso-label {
+        font-size: 10px;
+    }
+
+    .recurso-quadrado {
+        width: 14px;
+        height: 14px;
+    }
+
+    .ressonancia-input {
+        width: 90px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE — 500px
+   ========================================================= */
+
+@media (max-width: 500px) {
+
+    .discipline-header {
+        gap: 6px;
+    }
+
+    .discipline-dots {
+        gap: 4px;
+    }
+
+    .discipline-dots button {
+        width: 15px;
+        height: 15px;
+    }
+
+    .recursos-linha {
+        gap: 10px;
+    }
+
+    .recurso-item {
+        gap: 5px;
+    }
+
+    .recurso-label {
+        font-size: 9px;
+        letter-spacing: 0.7px;
+    }
+
+    .recurso-quadrado {
+        width: 13px;
+        height: 13px;
+    }
+
+    .maculas-controle {
+        gap: 5px;
+    }
+
+    .maculas-controle span {
+        font-size: 9px;
+        letter-spacing: 0.7px;
+    }
+
+    .maculas-controle button {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE — 450px
+   ========================================================= */
+
+@media (max-width: 450px) {
+
+    .title-container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .resource {
+        padding: 15px;
+    }
+
+    .damage-box {
+        width: 25px;
+        height: 25px;
+    }
+
+    .recursos-linha {
+        gap: 8px;
+
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .recurso-trilha {
+        gap: 3px;
+    }
+
+    .recurso-trilha--dupla
+    .recurso-quadrado:nth-child(6) {
+        margin-left: 6px;
+    }
+
+    .recurso-trilha--maculas {
+        gap: 3px;
+    }
+
+    .recurso-quadrado {
+        width: 12px;
+        height: 12px;
+    }
+
+    .ressonancia-input {
+        width: 75px;
+    }
+}
