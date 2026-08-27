@@ -1,0 +1,418 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    isolation: isolate;
+
+    font-family: "Manrope", sans-serif;
+    color: #f3efec;
+
+    background:
+        radial-gradient(circle at 50% 120%, rgba(100, 0, 18, 0.18), transparent 45%),
+        #09090b;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: -20%;
+    z-index: -1;
+    pointer-events: none;
+
+    background:
+        radial-gradient(ellipse at 30% 70%, rgba(120, 0, 20, 0.15), transparent 35%),
+        radial-gradient(ellipse at 75% 30%, rgba(80, 0, 15, 0.12), transparent 40%);
+
+    filter: blur(80px);
+    animation: backgroundFlow 15s ease-in-out infinite alternate;
+}
+
+@keyframes backgroundFlow {
+    0% {
+        transform: translate3d(-3%, 2%, 0) scale(1);
+    }
+
+    50% {
+        transform: translate3d(4%, -2%, 0) scale(1.08);
+    }
+
+    100% {
+        transform: translate3d(-1%, 4%, 0) scale(1.03);
+    }
+}
+
+.register-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+}
+
+.register-container {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+}
+
+.register-header {
+    text-align: center;
+}
+
+.register-logo {
+    display: inline-block;
+
+    font-family: "Cormorant Garamond", serif;
+    font-size: 3rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+
+    color: #fffafa;
+    text-decoration: none;
+
+    transition: color 0.2s ease, letter-spacing 0.25s ease;
+}
+
+.register-logo:hover {
+    color: #ffffff;
+    letter-spacing: 0.23em;
+}
+
+.register-subtitle {
+    margin-top: 0.35rem;
+
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #e4ded9;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.form-group label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c7c0bc;
+}
+
+.form-group input {
+    width: 100%;
+    min-height: 46px;
+    padding: 0.9rem 0.95rem;
+
+    font-family: "Manrope", sans-serif;
+    font-size: 0.95rem;
+    color: #f5f1ee;
+
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 7px;
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: rgba(220, 215, 210, 0.35);
+}
+
+.form-group input:hover {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.form-group input:focus,
+.form-group input:focus-visible {
+    background: rgba(255, 255, 255, 0.035);
+    border-color: rgba(150, 30, 50, 0.72);
+    box-shadow: 0 0 0 3px rgba(120, 0, 20, 0.08);
+    outline: none;
+}
+
+.password-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-field input {
+    padding-right: 5rem;
+}
+
+.show-password {
+    position: absolute;
+    right: 0.8rem;
+
+    padding: 0.25rem;
+    background: none;
+    border: none;
+
+    font-family: "Manrope", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #8f7f7f;
+
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.show-password:hover {
+    color: #c04458;
+}
+
+.show-password:focus-visible {
+    outline: 1px solid rgba(190, 60, 80, 0.65);
+    outline-offset: 3px;
+    border-radius: 2px;
+}
+
+.field-hint {
+    font-size: 0.72rem;
+    line-height: 1.4;
+    color: #827a76;
+}
+
+.form-group input.is-invalid {
+    border-color: rgba(205, 60, 80, 0.75);
+    background: rgba(120, 0, 20, 0.06);
+    box-shadow: 0 0 0 3px rgba(150, 20, 40, 0.08);
+}
+
+.form-group input.is-invalid:focus {
+    border-color: #c94a5e;
+    box-shadow: 0 0 0 3px rgba(180, 30, 55, 0.12);
+}
+
+.field-error {
+    min-height: 1rem;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    color: #d76578;
+}
+
+.register-error {
+    padding: 0.75rem 0.85rem;
+
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #e8b2bb;
+
+    background: rgba(125, 10, 30, 0.08);
+    border: 1px solid rgba(175, 40, 65, 0.16);
+    border-left: 2px solid rgba(190, 45, 70, 0.7);
+    border-radius: 5px;
+}
+
+.register-error[hidden] {
+    display: none;
+}
+
+.register-button {
+    width: 100%;
+    min-height: 47px;
+    margin-top: 0.35rem;
+    padding: 0.9rem 1rem;
+
+    position: relative;
+    overflow: hidden;
+
+    font-family: "Manrope", sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: #f8f4f1;
+
+    background: rgba(102, 12, 30, 0.78);
+    border: 1px solid rgba(170, 45, 70, 0.38);
+    border-radius: 7px;
+
+    cursor: pointer;
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.register-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 80%;
+    height: 100%;
+
+    background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+    transition: left 0.45s ease;
+}
+
+.register-button:hover {
+    transform: translateY(-1px);
+    background: rgba(125, 16, 38, 0.9);
+    border-color: rgba(190, 55, 80, 0.55);
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.28),
+        0 0 0 1px rgba(150, 25, 50, 0.08);
+}
+
+.register-button:hover::before {
+    left: 130%;
+}
+
+.register-button:active {
+    transform: translateY(0) scale(0.995);
+    background: rgba(95, 10, 27, 0.95);
+}
+
+.register-button:focus-visible {
+    outline: 2px solid rgba(185, 55, 80, 0.55);
+    outline-offset: 4px;
+}
+
+.register-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    transform: none;
+    background: rgba(75, 20, 30, 0.55);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: none;
+}
+
+.register-button:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.register-button:disabled::before {
+    display: none;
+}
+
+.register-footer {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.register-divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.register-divider span {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.09), transparent);
+}
+
+.login-text {
+    font-size: 0.82rem;
+    color: #918985;
+}
+
+.login-text a {
+    margin-left: 0.2rem;
+    color: #d5cdca;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(130, 20, 40, 0.5);
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.login-text a:hover {
+    color: #ffffff;
+    border-color: #9f263c;
+}
+
+.register-footer a:focus-visible,
+.register-logo:focus-visible {
+    outline: 1px solid rgba(190, 60, 80, 0.65);
+    outline-offset: 4px;
+    border-radius: 2px;
+}
+
+@media (max-width: 500px) {
+    .register-page {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .register-container {
+        max-width: 100%;
+        gap: 1.7rem;
+    }
+
+    .register-logo {
+        font-size: 2.4rem;
+        letter-spacing: 0.16em;
+    }
+
+    .register-subtitle {
+        font-size: 1rem;
+    }
+
+    .form-group input {
+        font-size: 1rem;
+    }
+
+    .register-button {
+        min-height: 48px;
+    }
+}
+
+@media (max-width: 350px) {
+    .register-page {
+        padding: 1rem;
+    }
+
+    .register-logo {
+        font-size: 2rem;
+    }
+
+    .login-text {
+        line-height: 1.6;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before {
+        animation: none;
+    }
+
+    * {
+        transition-duration: 0.001ms !important;
+    }
+}

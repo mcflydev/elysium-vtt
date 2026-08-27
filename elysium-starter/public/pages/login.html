@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Entre no Elysium.">
+    <title>Login | Elysium</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+    <main class="login-page">
+        <section class="login-container">
+            <header class="login-header">
+                <a href="/" class="login-logo" aria-label="Voltar para a página inicial">ELYSIUM</a>
+                <p class="login-subtitle">Bem-vindo de volta.</p>
+            </header>
+
+            <form class="login-form" id="login-form" novalidate>
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" required>
+                    <span class="field-error" id="email-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" autocomplete="current-password" required>
+                        <button type="button" class="show-password" id="show-password" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
+                    </div>
+                    <span class="field-error" id="password-error" aria-live="polite"></span>
+                </div>
+
+                <div class="login-error" id="login-error" role="alert" aria-live="polite" hidden>
+                    E-mail ou senha incorretos.
+                </div>
+
+                <button type="submit" class="login-button" id="login-button">Entrar</button>
+            </form>
+
+            <footer class="login-footer">
+                <div class="login-divider" aria-hidden="true"><span></span></div>
+                <p class="register-text">
+                    Ainda não possui uma conta?
+                    <a href="/pages/cadastro.html">Criar conta</a>
+                </p>
+            </footer>
+        </section>
+    </main>
+
+    <script type="module" src="/js/login.js"></script>
+</body>
+</html>

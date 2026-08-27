@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Crie sua conta no Elysium.">
+    <title>Criar conta | Elysium</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/cadastro.css">
+</head>
+<body>
+    <main class="register-page">
+        <section class="register-container">
+            <header class="register-header">
+                <a href="/" class="register-logo" aria-label="Voltar para a página inicial">ELYSIUM</a>
+                <p class="register-subtitle">Crie sua conta.</p>
+            </header>
+
+            <form class="register-form" id="register-form" novalidate>
+                <div class="form-group">
+                    <label for="name">Nome</label>
+                    <input type="text" id="name" name="name" placeholder="Seu nome" autocomplete="name" required>
+                    <span class="field-error" id="name-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" required>
+                    <span class="field-error" id="email-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" placeholder="Crie uma senha" autocomplete="new-password" required>
+                        <button type="button" class="show-password" id="show-password" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
+                    </div>
+                    <span class="field-hint">Use pelo menos 8 caracteres.</span>
+                    <span class="field-error" id="password-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirmar senha</label>
+                    <div class="password-field">
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Digite sua senha novamente" autocomplete="new-password" required>
+                        <button type="button" class="show-password" id="show-confirm-password" aria-label="Mostrar confirmação da senha" aria-pressed="false">Mostrar</button>
+                    </div>
+                    <span class="field-error" id="confirm-password-error" aria-live="polite"></span>
+                </div>
+
+                <div class="register-error" id="register-error" role="alert" aria-live="polite" hidden>
+                    Não foi possível criar sua conta.
+                </div>
+
+                <button type="submit" class="register-button" id="register-button">Criar conta</button>
+            </form>
+
+            <footer class="register-footer">
+                <div class="register-divider" aria-hidden="true"><span></span></div>
+                <p class="login-text">
+                    Já possui uma conta?
+                    <a href="/pages/login.html">Entrar</a>
+                </p>
+            </footer>
+        </section>
+    </main>
+
+    <script type="module" src="/js/cadastro.js"></script>
+</body>
+</html>

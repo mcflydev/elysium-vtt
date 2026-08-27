@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Suas Crônicas no Elysium.">
+    <title>Minhas Crônicas | Elysium</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/cronicas.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="/">ELYSIUM</a>
+        <div class="account-area">
+            <span id="user-name" class="user-name"></span>
+            <button type="button" class="logout-button" id="logout-button">Sair</button>
+        </div>
+    </header>
+
+    <main class="chronicles-page">
+        <section class="chronicles-header">
+            <div>
+                <p class="eyebrow">Crônicas</p>
+                <h1>Minhas Crônicas</h1>
+                <p class="page-subtitle">Organize suas mesas e continue de onde parou.</p>
+            </div>
+
+            <button type="button" class="new-chronicle-button" id="new-chronicle-button" aria-expanded="false" aria-controls="create-panel">Nova Crônica</button>
+        </section>
+
+        <section class="create-panel" id="create-panel" hidden>
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Nova Crônica</p>
+                    <h2>Defina o primeiro registro da noite.</h2>
+                </div>
+                <button type="button" class="close-panel-button" id="close-panel-button" aria-label="Fechar criação">Fechar</button>
+            </div>
+
+            <form id="chronicle-form" class="chronicle-form" novalidate>
+                <div class="form-group full">
+                    <label for="chronicle-name">Nome da Crônica</label>
+                    <input id="chronicle-name" name="name" type="text" maxlength="100" placeholder="Ex.: Sangue Sobre Vitória" required>
+                    <span class="field-error" id="chronicle-name-error" aria-live="polite"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="chronicle-city">Cidade</label>
+                    <input id="chronicle-city" name="city" type="text" maxlength="100" placeholder="Vitória, ES">
+                </div>
+
+                <div class="form-group full">
+                    <label for="chronicle-description">Descrição</label>
+                    <textarea id="chronicle-description" name="description" maxlength="1000" rows="4" placeholder="Uma breve descrição da Crônica..."></textarea>
+                </div>
+
+                <div class="form-actions full">
+                    <span class="form-error" id="chronicle-form-error" hidden></span>
+                    <button type="submit" class="create-button" id="create-button">Criar Crônica</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="chronicles-content" aria-live="polite">
+            <div class="loading-state">Carregando suas Crônicas...</div>
+        </section>
+    </main>
+
+    <script type="module" src="/js/cronicas.js"></script>
+</body>
+</html>
