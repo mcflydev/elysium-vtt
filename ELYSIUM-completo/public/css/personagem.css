@@ -1,0 +1,24 @@
+@import url('./app.css');
+.sheet-page { max-width: 1250px; margin: 0 auto; padding: 1.5rem clamp(1rem,3vw,3rem) 4rem; }
+.sheet-header { display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.5rem; }
+.sheet-header h1 { font:600 clamp(2.3rem,6vw,4.5rem)/.9 "Cormorant Garamond",serif; }
+.sheet-header p { color:var(--muted);margin-top:.45rem; }
+.sheet-section { margin-top:1rem; }
+.sheet-section>header { margin-bottom:.7rem;display:flex;justify-content:space-between;align-items:end;gap:1rem; }
+.sheet-section h2 { font:600 1.5rem/1 "Cormorant Garamond",serif; }
+.attribute-columns { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem; }
+.attribute-column { padding:.9rem;border:1px solid var(--border);border-radius:8px;background:var(--panel); }
+.attribute-column h3 { color:#d8d0cb;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.55rem; }
+.score-row { display:grid;grid-template-columns:minmax(110px,1fr) 76px;gap:.6rem;align-items:center;padding:.36rem 0;border-bottom:1px solid rgba(255,255,255,.045); }
+.score-row:last-child { border-bottom:0; }
+.score-row label { font-size:.75rem;color:#d6cfca; }
+.score-row input { padding:.5rem;text-align:center; }
+.skills-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem; }
+.trackers-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem; }
+.tracker-card { padding:.85rem;border:1px solid var(--border);border-radius:8px;background:var(--panel); }
+.tracker-card label { display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.45rem; }
+.tracker-pair { display:grid;grid-template-columns:1fr 1fr;gap:.4rem; }
+.narrative-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem; }
+.sticky-save { position:sticky;bottom:1rem;display:flex;justify-content:flex-end;gap:.5rem;margin-top:1rem;z-index:10;pointer-events:none; }
+.sticky-save>* { pointer-events:auto;box-shadow:0 10px 35px rgba(0,0,0,.35); }
+@media(max-width:900px){.attribute-columns,.skills-grid,.trackers-grid,.narrative-grid{grid-template-columns:1fr}.sheet-header{flex-direction:column}.sheet-header .top-actions{width:100%}}

@@ -85,6 +85,7 @@ export function getUserFromSession(rawToken) {
             users.id,
             users.name,
             users.email,
+            users.is_admin,
             sessions.expires_at
         FROM sessions
         JOIN users ON users.id = sessions.user_id
@@ -100,7 +101,8 @@ export function getUserFromSession(rawToken) {
     return {
         id: session.id,
         name: session.name,
-        email: session.email
+        email: session.email,
+        isAdmin: Boolean(session.is_admin)
     };
 }
 

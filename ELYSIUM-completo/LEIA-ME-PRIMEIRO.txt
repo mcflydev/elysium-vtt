@@ -1,0 +1,15 @@
+ELYSIUM 
+============================
+
+1. Abra Elysium.exe.
+2. Na primeira vez, aguarde o runtime ser preparado automaticamente.
+3. O navegador abrirá sozinho.
+4. Para jogar via Radmin, role a página inicial até "Jogar com amigos via Radmin".
+5. O Mestre copia o endereço exibido e manda para os jogadores.
+6. Para fechar o servidor, abra "Fechar Elysium.exe".
+
+IMPORTANTE:
+- Não mova somente o Elysium.exe. Ele deve permanecer dentro desta pasta.
+- O banco fica em data/elysium.db.
+- O primeiro cadastro vira administrador global desta instalação.
+- Os jogadores precisam estar na mesma rede do Radmin do Mestre.

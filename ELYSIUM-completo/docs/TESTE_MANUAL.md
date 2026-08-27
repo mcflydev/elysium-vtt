@@ -1,0 +1,31 @@
+# Checklist de teste manual
+
+- [ ] `npm start`
+- [ ] Abrir `http://localhost:3000`
+- [ ] Criar primeiro usuário
+- [ ] Confirmar acesso ao Admin
+- [ ] Criar Crônica
+- [ ] Editar dados da Crônica
+- [ ] Gerar convite
+- [ ] Criar segunda conta em outro navegador/perfil
+- [ ] Entrar pelo convite
+- [ ] Criar personagem
+- [ ] Editar atributos/perícias/Fome
+- [ ] Mestre solicitar rolagem
+- [ ] Jogador receber solicitação
+- [ ] Jogador rolar e Mestre visualizar resultado
+- [ ] Criar e ativar Cena
+- [ ] Criar/revelar Nota
+- [ ] Enviar nota privada Jogador → Mestre
+- [ ] Testar chat/sussurro
+- [ ] Criar NPC
+- [ ] Criar item do Diário
+- [ ] Criar Temporada/Episódio/Ato
+- [ ] Criar evento de Timeline
+- [ ] Adicionar mídia e ativar/parar
+- [ ] Preparar/iniciar/encerrar Cutscene
+- [ ] Criar mapa e clicar para adicionar marcador
+- [ ] Criar Conflito e avançar rodada
+- [ ] Criar Relógio e avançar segmentos
+- [ ] Abrir Modo Transmissão
+- [ ] Excluir Crônica de teste

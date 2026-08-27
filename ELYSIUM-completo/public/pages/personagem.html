@@ -1,0 +1,33 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ficha | Elysium</title><link rel="stylesheet" href="../css/personagem.css"></head><body>
+<main class="sheet-page">
+<header class="sheet-header"><div><p class="eyebrow">Ficha V5</p><h1 id="sheet-title">Personagem</h1><p id="sheet-context">Carregando ficha...</p></div><div class="top-actions"><a class="button-ghost" id="back-link">← Crônica</a><button class="button-danger" id="delete-character">Excluir personagem</button></div></header>
+<form id="sheet-form">
+<section class="card"><div class="form-grid"><div class="form-group"><label>Nome</label><input id="name"></div><div class="form-group"><label>Conceito</label><input id="concept"></div><div class="form-group"><label>Clã</label><input id="clan"></div><div class="form-group"><label>Predador</label><input id="predator"></div><div class="form-group full"><label>Avatar (URL)</label><input id="avatar"></div><div class="form-group full"><label>História</label><textarea id="story" style="min-height:140px"></textarea></div></div></section>
+
+<section class="sheet-section"><header><div><p class="eyebrow">Atributos</p><h2>Corpo, presença e mente</h2></div></header><div class="attribute-columns" id="attributes"></div></section>
+<section class="sheet-section"><header><div><p class="eyebrow">Perícias</p><h2>Competências</h2></div></header><div class="skills-grid" id="skills"></div></section>
+
+<section class="sheet-section"><header><div><p class="eyebrow">Estado</p><h2>Rastreadores</h2></div></header><div class="trackers-grid">
+<div class="tracker-card"><label>Fome</label><input id="hunger" type="number" min="0" max="5"></div>
+<div class="tracker-card"><label>Humanidade</label><input id="humanity" type="number" min="0" max="10"></div>
+<div class="tracker-card"><label>Máculas</label><input id="stains" type="number" min="0" max="10"></div>
+<div class="tracker-card"><label>Potência de Sangue</label><input id="blood-potency" type="number" min="0" max="10"></div>
+<div class="tracker-card"><label>Saúde</label><div class="tracker-pair"><input id="health-current" type="number" min="0"><input id="health-max" type="number" min="1"></div><p class="help">Atual / Máxima</p></div>
+<div class="tracker-card"><label>Força de Vontade</label><div class="tracker-pair"><input id="will-current" type="number" min="0"><input id="will-max" type="number" min="1"></div><p class="help">Atual / Máxima</p></div>
+<div class="tracker-card"><label>Ressonância</label><input id="resonance"></div>
+<div class="tracker-card"><label>XP disponível</label><input id="xp" type="number" min="0"></div>
+</div></section>
+
+<section class="sheet-section"><header><div><p class="eyebrow">Crônica pessoal</p><h2>Disciplinas, vínculos e escolhas</h2></div></header><div class="narrative-grid">
+<div class="card"><div class="form-group"><label>Especialidades</label><textarea id="specialties" placeholder="Uma por linha"></textarea></div></div>
+<div class="card"><div class="form-group"><label>Disciplinas / Poderes</label><textarea id="disciplines" placeholder="Uma por linha"></textarea></div></div>
+<div class="card"><div class="form-group"><label>Vantagens</label><textarea id="advantages" placeholder="Uma por linha"></textarea></div></div>
+<div class="card"><div class="form-group"><label>Defeitos</label><textarea id="flaws" placeholder="Um por linha"></textarea></div></div>
+<div class="card"><div class="form-group"><label>Convicções</label><textarea id="convictions" placeholder="Uma por linha"></textarea></div></div>
+<div class="card"><div class="form-group"><label>Touchstones</label><textarea id="touchstones" placeholder="Um por linha"></textarea></div></div>
+</div></section>
+
+<section class="sheet-section master-only" id="xp-panel"><header><div><p class="eyebrow">Progressão</p><h2>Ajustar experiência</h2></div></header><div class="card"><div class="form-grid"><div class="form-group"><label>Quantidade (+ concede / − remove)</label><input id="xp-amount" type="number" value="1"></div><div class="form-group"><label>Motivo</label><input id="xp-reason" placeholder="Fim da sessão, evolução aprovada..."></div></div><div class="form-actions"><button type="button" class="button" id="xp-apply">Aplicar XP</button></div></div></section>
+
+<div class="sticky-save"><button type="submit" class="button" id="save-button">Salvar ficha</button></div>
+</form></main><div class="toast" id="toast" hidden></div><script type="module" src="../js/personagem.js"></script></body></html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Elysium — plataforma open-source para gerenciamento de Crônicas de Vampiro: A Máscara V5.">
+    <title>Elysium</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+    <main class="main">
+        <section class="hero" aria-labelledby="elysium-title">
+            <p class="eyebrow">Vampiro: A Máscara V5</p>
+            <h1 id="elysium-title">ELYSIUM</h1>
+            <p class="subtitle">Uma plataforma open-source para narrar, organizar e dar vida às suas Crônicas.</p>
+
+            <div class="hero-actions">
+                <a class="start-btn" href="./pages/login.html">Entrar no Elysium</a>
+                <a class="network-link" href="#radmin">Jogar com amigos via Radmin</a>
+            </div>
+        </section>
+
+        <section class="radmin-guide" id="radmin" aria-labelledby="radmin-title">
+            <div class="section-heading">
+                <p class="eyebrow">Modo local / Radmin VPN</p>
+                <h2 id="radmin-title">Sua mesa em poucos cliques.</h2>
+                <p>
+                    O computador do Mestre hospeda o Elysium. Os jogadores só precisam estar na mesma rede do Radmin e abrir o endereço abaixo no navegador.
+                </p>
+            </div>
+
+            <div class="connection-card" id="connection-card">
+                <div>
+                    <span class="connection-label">Endereço para compartilhar</span>
+                    <strong class="connection-url" id="connection-url">Detectando Radmin...</strong>
+                    <small class="connection-status" id="connection-status">Verificando as interfaces de rede deste computador.</small>
+                </div>
+                <button class="copy-btn" id="copy-address" type="button" disabled>Copiar endereço</button>
+            </div>
+
+            <div class="guide-grid">
+                <article class="guide-column">
+                    <div class="guide-number">01</div>
+                    <h3>Se você é o Mestre</h3>
+                    <ol>
+                        <li><strong>Abra o Radmin VPN</strong> e crie ou entre em uma rede.</li>
+                        <li><strong>Abra o Elysium.exe.</strong> O servidor inicia sozinho e esta página abre automaticamente.</li>
+                        <li>Na primeira execução, se o Windows perguntar sobre Firewall, permita o acesso em <strong>Redes privadas</strong>.</li>
+                        <li>Copie o endereço detectado acima e envie para os jogadores.</li>
+                        <li>Mantenha o Elysium rodando enquanto a sessão estiver acontecendo.</li>
+                    </ol>
+                </article>
+
+                <article class="guide-column">
+                    <div class="guide-number">02</div>
+                    <h3>Se você é Jogador</h3>
+                    <ol>
+                        <li><strong>Abra o Radmin VPN</strong> e entre na mesma rede do Mestre.</li>
+                        <li>Peça ao Mestre o endereço do Elysium. Ele será parecido com <code>http://26.x.x.x:3000</code>.</li>
+                        <li>Cole o endereço na barra do Chrome, Firefox, Edge ou outro navegador.</li>
+                        <li>Crie sua conta ou faça login.</li>
+                        <li>Entre na Crônica pelo convite enviado pelo Mestre.</li>
+                    </ol>
+                </article>
+            </div>
+
+            <div class="troubleshooting">
+                <h3>Não conectou?</h3>
+                <div class="trouble-grid">
+                    <p><strong>1.</strong> Confirme que todos aparecem online na mesma rede do Radmin.</p>
+                    <p><strong>2.</strong> Confirme que o endereço começa com o IP do Mestre no Radmin e contém a porta exibida.</p>
+                    <p><strong>3.</strong> No PC do Mestre, permita o Elysium/Node no Firewall do Windows para redes privadas.</p>
+                    <p><strong>4.</strong> O jogador não deve usar <code>localhost</code>. Esse endereço só funciona no computador que está hospedando.</p>
+                </div>
+            </div>
+
+            <p class="privacy-note">
+                O banco da mesa continua no computador do host. O Radmin funciona apenas como a rede que conecta os participantes ao servidor local do Elysium.
+            </p>
+        </section>
+    </main>
+
+    <script src="./js/index.js"></script>
+</body>
+</html>

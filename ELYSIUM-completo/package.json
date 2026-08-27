@@ -1,0 +1,13 @@
+{
+  "name": "elysium-v5-local",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "description": "Elysium - gerenciador local de Crônicas de Vampiro: A Máscara V5",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js",
+    "check": "node --check server/server.js && node --check public/js/cronica.js"
+  },
+  "engines": { "node": ">=22.13.0" }
+}
