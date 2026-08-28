@@ -96,3 +96,12 @@ Abra a porta 3000. O VTT fica em:
 ## Testes
 
 Consulte `TESTE_ONE_SHOT_V09.md` e a pasta `test-results/`.
+
+
+## Alterações específicas da v0.9.4
+
+- Macro Hotbar corrigida para 5 páginas de 10 slots (50 slots).
+- Botões anterior/próxima página agora funcionam.
+- Teclas 1–0 executam macros da página atual.
+- Backend aceita slots 0–49, mantendo compatibilidade com macros antigas nos slots 0–9.
+- Build validada em simulação automatizada de campanha de 10 sessões: 154/154 verificações.

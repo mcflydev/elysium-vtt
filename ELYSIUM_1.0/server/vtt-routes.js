@@ -1,5 +1,6 @@
 import { db } from "./db.js";
 import { getSessionToken, getUserFromSession } from "./auth.js";
+import { computeVisionPolygon, normalizeFogShape } from "../public/js/fog-geometry.js";
 
 const MASTER_ROLES = new Set(["owner", "master", "co-master"]);
 const MAX_BODY_SIZE = 1024 * 1024;
@@ -120,6 +121,48 @@ function cleanScene(row) {
         is_current: Boolean(row.is_current)
     };
 }
+
+function publicWall(row, gm) {
+    if (gm || row.wall_type !== "secret") return row;
+    const open = row.door_state === "open";
+    return {
+        id: row.id,
+        chronicle_id: row.chronicle_id, scene_id: row.scene_id,
+        x1: row.x1, y1: row.y1, x2: row.x2, y2: row.y2,
+        wall_type: "wall", door_state: "closed",
+        blocks_vision: open ? 0 : row.blocks_vision,
+        blocks_movement: open ? 0 : row.blocks_movement,
+        blocks_sound: open ? 0 : row.blocks_sound
+    };
+}
+function sanitizeGlobalFog(shapes, scene) {
+    if (!Array.isArray(shapes)) return [];
+    const out = [];
+    for (const raw of shapes.slice(-500)) {
+        const shape = normalizeFogShape(raw);
+        if (!shape || shape.type !== "rect") continue;
+        const x1 = Math.max(0, Math.min(scene.width, shape.x));
+        const y1 = Math.max(0, Math.min(scene.height, shape.y));
+        const x2 = Math.max(0, Math.min(scene.width, shape.x + shape.w));
+        const y2 = Math.max(0, Math.min(scene.height, shape.y + shape.h));
+        if (x2 > x1 && y2 > y1) out.push({ x:x1, y:y1, w:x2-x1, h:y2-y1 });
+    }
+    return out;
+}
+function appendServerExploration(scene, user, tokenId) {
+    const token = db.prepare("SELECT * FROM vtt_tokens WHERE id=? AND scene_id=?").get(Number(tokenId), scene.id);
+    if (!token || token.owner_user_id !== user.id || token.hidden || !token.vision_enabled) return { ok:false, message:"Token sem visão ou sem controle." };
+    const walls = db.prepare("SELECT * FROM vtt_walls WHERE scene_id=?").all(scene.id);
+    const points = computeVisionPolygon({ ...token, vision_enabled:Boolean(token.vision_enabled) }, walls, { width:scene.width, height:scene.height });
+    if (points.length < 3) return { ok:false, message:"Este token não possui alcance de visão válido." };
+    const current = db.prepare("SELECT * FROM vtt_fog WHERE scene_id=? AND user_id=?").get(scene.id, user.id) ?? { revealed_json:"[]", explored_json:"[]" };
+    const explored = parse(current.explored_json, []).filter(x => normalizeFogShape(x)).slice(-99);
+    const exploredShape={ type:"polygon", points:points.map(p=>({x:Number(p.x.toFixed(3)),y:Number(p.y.toFixed(3))})) };
+    explored.push(exploredShape);
+    db.prepare(`INSERT INTO vtt_fog(scene_id,user_id,revealed_json,explored_json,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(scene_id,user_id) DO UPDATE SET revealed_json=excluded.revealed_json,explored_json=excluded.explored_json,updated_at=CURRENT_TIMESTAMP`).run(scene.id,user.id,current.revealed_json||"[]",json(explored,[]));
+    return { ok:true, exploredShape, exploredCount:explored.length };
+}
+
 function publicToken(row) {
     return { ...row, status: parse(row.status_json, []) };
 }
@@ -248,7 +291,7 @@ function patchPlaceable(type, row, b, moveOnly = false) {
 function scenePayload(scene, user, m) {
     const gm = canManage(user, m);
     const tokenRows = db.prepare("SELECT * FROM vtt_tokens WHERE scene_id=? ORDER BY id").all(scene.id).filter((r) => gm || !r.hidden).map(publicToken);
-    const wallRows = db.prepare("SELECT * FROM vtt_walls WHERE scene_id=? ORDER BY id").all(scene.id).filter((r) => gm || r.wall_type !== "secret");
+    const wallRows = db.prepare("SELECT * FROM vtt_walls WHERE scene_id=? ORDER BY id").all(scene.id).map((r) => publicWall(r, gm));
     const tileRows = db.prepare("SELECT * FROM vtt_tiles WHERE scene_id=? ORDER BY id").all(scene.id).filter((r) => gm || (!r.hidden && r.layer !== "gm"));
     const drawingRows = db.prepare("SELECT * FROM vtt_drawings WHERE scene_id=? ORDER BY id").all(scene.id).filter((r) => gm || !r.hidden).map(publicDrawing);
     const lightRows = db.prepare("SELECT * FROM vtt_lights WHERE scene_id=? ORDER BY id").all(scene.id).filter((r) => gm || !r.hidden);
@@ -366,7 +409,30 @@ export async function handleVttApi(request, response, url) {
     // Fog / Explorer.
     match = url.pathname.match(/^\/api\/vtt\/scenes\/(\d+)\/fog$/);
     if (match && request.method === "PUT") {
-        const user=auth(request,response);if(!user)return true;const scene=sceneById(Number(match[1]));if(!scene){sendJson(response,404,{success:false,message:"Cena não encontrada."});return true;}const m=member(scene.chronicle_id,user,response);if(!m)return true;const b=await readJsonBody(request);const target=b.scope==="user"?user.id:0;if(target===0&&!canManage(user,m)){sendJson(response,403,{success:false,message:"Somente o Mestre altera o Fog global."});return true;}db.prepare(`INSERT INTO vtt_fog(scene_id,user_id,revealed_json,explored_json,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(scene_id,user_id) DO UPDATE SET revealed_json=excluded.revealed_json,explored_json=excluded.explored_json,updated_at=CURRENT_TIMESTAMP`).run(scene.id,target,json(Array.isArray(b.revealed)?b.revealed:[],[]),json(Array.isArray(b.explored)?b.explored:[],[]));sendJson(response,200,{success:true});return true;
+        const user=auth(request,response);if(!user)return true;
+        const scene=sceneById(Number(match[1]));if(!scene){sendJson(response,404,{success:false,message:"Cena não encontrada."});return true;}
+        const m=member(scene.chronicle_id,user,response);if(!m)return true;
+        const b=await readJsonBody(request);
+        if(b.scope==="user"){
+            if(!scene.explorer_enabled){sendJson(response,409,{success:false,message:"Explorer Mode está desativado nesta cena."});return true;}
+            const result=appendServerExploration(scene,user,b.tokenId);
+            if(!result.ok){sendJson(response,403,{success:false,message:result.message});return true;}
+            sendJson(response,200,{success:true,exploredShape:result.exploredShape,exploredCount:result.exploredCount});return true;
+        }
+        if(!canManage(user,m)){sendJson(response,403,{success:false,message:"Somente o Mestre altera o Fog global."});return true;}
+        const revealed=sanitizeGlobalFog(b.revealed,scene);
+        const current=db.prepare("SELECT explored_json FROM vtt_fog WHERE scene_id=? AND user_id=0").get(scene.id);
+        db.prepare(`INSERT INTO vtt_fog(scene_id,user_id,revealed_json,explored_json,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(scene_id,user_id) DO UPDATE SET revealed_json=excluded.revealed_json,explored_json=excluded.explored_json,updated_at=CURRENT_TIMESTAMP`).run(scene.id,0,json(revealed,[]),current?.explored_json||"[]");
+        sendJson(response,200,{success:true,revealed});return true;
+    }
+
+    match = url.pathname.match(/^\/api\/vtt\/scenes\/(\d+)\/fog\/explorer$/);
+    if (match && request.method === "DELETE") {
+        const user=auth(request,response);if(!user)return true;
+        const scene=sceneById(Number(match[1]));if(!scene){sendJson(response,404,{success:false,message:"Cena não encontrada."});return true;}
+        if(!master(scene.chronicle_id,user,response))return true;
+        const info=db.prepare("DELETE FROM vtt_fog WHERE scene_id=? AND user_id<>0").run(scene.id);
+        sendJson(response,200,{success:true,cleared:Number(info.changes||0)});return true;
     }
 
     // Presença, cursores remotos e pings.
@@ -408,9 +474,9 @@ export async function handleVttApi(request, response, url) {
 
     // Macros / hotbar.
     match = url.pathname.match(/^\/api\/vtt\/chronicles\/(\d+)\/macros$/);
-    if (match && request.method === "POST") { const user=auth(request,response);if(!user)return true;const cid=Number(match[1]);if(!member(cid,user,response))return true;const b=await readJsonBody(request);const r=db.prepare("INSERT INTO vtt_macros(chronicle_id,user_id,name,command,icon,slot,visibility) VALUES(?,?,?,?,?,?,?)").run(cid,user.id,txt(b.name,100)||"Macro",txt(b.command,1000),txt(b.icon,10)||"◆",b.slot==null?null:int(b.slot,0,9,0),b.visibility==="all"?"all":"private");sendJson(response,201,{success:true,id:Number(r.lastInsertRowid)});return true; }
+    if (match && request.method === "POST") { const user=auth(request,response);if(!user)return true;const cid=Number(match[1]);if(!member(cid,user,response))return true;const b=await readJsonBody(request);const r=db.prepare("INSERT INTO vtt_macros(chronicle_id,user_id,name,command,icon,slot,visibility) VALUES(?,?,?,?,?,?,?)").run(cid,user.id,txt(b.name,100)||"Macro",txt(b.command,1000),txt(b.icon,10)||"◆",b.slot==null?null:int(b.slot,0,49,0),b.visibility==="all"?"all":"private");sendJson(response,201,{success:true,id:Number(r.lastInsertRowid)});return true; }
     match = url.pathname.match(/^\/api\/vtt\/macros\/(\d+)$/);
-    if (match && ["PATCH","DELETE"].includes(request.method)) { const user=auth(request,response);if(!user)return true;const row=db.prepare("SELECT * FROM vtt_macros WHERE id=?").get(Number(match[1]));if(!row){sendJson(response,404,{success:false,message:"Macro não encontrada."});return true;}const m=member(row.chronicle_id,user,response);if(!m)return true;if(row.user_id!==user.id&&!canManage(user,m)){sendJson(response,403,{success:false,message:"Esta macro não pertence a você."});return true;}if(request.method==="DELETE"){db.prepare("DELETE FROM vtt_macros WHERE id=?").run(row.id);sendJson(response,200,{success:true});return true;}const b=await readJsonBody(request);db.prepare("UPDATE vtt_macros SET name=?,command=?,icon=?,slot=?,visibility=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").run(txt(b.name??row.name,100),txt(b.command??row.command,1000),txt(b.icon??row.icon,10),b.slot===null?null:(b.slot==null?row.slot:int(b.slot,0,9,0)),b.visibility==="all"?"all":(b.visibility==="private"?"private":row.visibility),row.id);sendJson(response,200,{success:true});return true; }
+    if (match && ["PATCH","DELETE"].includes(request.method)) { const user=auth(request,response);if(!user)return true;const row=db.prepare("SELECT * FROM vtt_macros WHERE id=?").get(Number(match[1]));if(!row){sendJson(response,404,{success:false,message:"Macro não encontrada."});return true;}const m=member(row.chronicle_id,user,response);if(!m)return true;if(row.user_id!==user.id&&!canManage(user,m)){sendJson(response,403,{success:false,message:"Esta macro não pertence a você."});return true;}if(request.method==="DELETE"){db.prepare("DELETE FROM vtt_macros WHERE id=?").run(row.id);sendJson(response,200,{success:true});return true;}const b=await readJsonBody(request);db.prepare("UPDATE vtt_macros SET name=?,command=?,icon=?,slot=?,visibility=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").run(txt(b.name??row.name,100),txt(b.command??row.command,1000),txt(b.icon??row.icon,10),b.slot===null?null:(b.slot==null?row.slot:int(b.slot,0,49,0)),b.visibility==="all"?"all":(b.visibility==="private"?"private":row.visibility),row.id);sendJson(response,200,{success:true});return true; }
 
     // Rolagem V5 com suporte a segredo real no servidor.
     match = url.pathname.match(/^\/api\/vtt\/chronicles\/(\d+)\/rolls$/);

@@ -1,0 +1,191 @@
+{
+  "passed": 37,
+  "total": 37,
+  "results": [
+    {
+      "name": "Servidor responde",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cadastro Mestre",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cadastro Jogador 1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cadastro Jogador 2",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Criação da Crônica",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Convite e entrada Jogador 1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Convite e entrada Jogador 2",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cena com Fog + Explorer criada",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Tokens separados por proprietário",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Porta secreta fechada criada",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador recebe bloqueador secreto sem revelar que é secreto",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Explorer do jogador é calculado pelo servidor",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Explorer respeita parede/porta secreta fechada",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Explorer persiste após novo GET",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Fog individual não vaza para outro jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não pode forjar Explorer enviando retângulo arbitrário",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não pode explorar com token de outro jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não altera Fog global",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Abrir porta secreta libera visão sem revelar handle secreto",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Fechar novamente porta secreta volta a cortar visão",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "blocksVision=false libera visão mesmo com passagem fechada",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Porta normal fechada corta visão",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador pode abrir porta normal e visão é liberada",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Porta trancada não pode ser aberta por jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Visão desativada impede Explorer",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Token oculto impede Explorer do jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Explorer desativado rejeita gravação",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Fog global do Mestre é persistido",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Fog global é recortado aos limites da cena no servidor",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Shapes inválidos de Fog global são descartados",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Fog global limita fragmentação a 500 retângulos",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Reset do Fog global persiste vazio",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Histórico do Explorer é limitado a 100 visões",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador 2 cria Explorer independente com seu token",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não pode limpar Explorer da mesa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mestre limpa Explorer de todos os jogadores",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Desativar Fog mantém flag sincronizada",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

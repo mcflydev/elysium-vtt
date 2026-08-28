@@ -1,4 +1,4 @@
-ELYSIUM — COMEÇAR NO WINDOWS
+ELYSIUM 1.0 — COMEÇAR NO WINDOWS
 ============================
 
 1. Abra Elysium.exe.

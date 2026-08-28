@@ -1,11 +1,16 @@
-# ELYSIUM v0.9 — VTT narrativo + Cutscenes locais + Click & Play
+# ELYSIUM 1.0 — VTT narrativo + Cutscenes locais + Click & Play
 
 Plataforma local para gerenciamento e realização de Crônicas de **Vampiro: A Máscara V5**.
 
 > O jogador joga uma Crônica. O Mestre dirige uma Crônica.
 
 
-## Sala da Crônica — VTT v0.9
+## Release 1.0
+
+A versão **1.0.0** é a primeira release estável do Elysium após a simulação automatizada de uma campanha completa de 10 sessões e a regressão dedicada da Fog. Nesta promoção para 1.0, a aplicação repetiu **154/154** verificações da campanha e a suíte de Fog passou em **141/141** verificações. A auditoria final também validou integridade do SQLite, referências locais das páginas e controles da interface. Consulte `docs/RELEASE_1.0.md`.
+
+
+## Sala da Crônica — VTT 1.0
 
 A Sala agora é uma aplicação de mesa dedicada em `public/pages/vtt.html`, separada do dashboard de preparação da Crônica.
 
@@ -167,3 +172,7 @@ A Sala da Crônica foi reorganizada para funcionar como uma mesa virtual central
 - jogadores comuns recebem apenas a cena atualmente revelada, evitando exposição de cenas preparadas.
 
 A organização se inspira no fluxo tradicional de VTTs (tabletop + toolbox + páginas/cenas + sidebar), mas o visual e os recursos continuam voltados ao Elysium e a Vampiro V5.
+
+## v0.9.2 — Fog Audit
+
+A v0.9.2 revisa o Fog of War e o Explorer Mode: linha de visão respeitando paredes/portas, Explorer calculado pelo servidor, proteção contra polling atrasado, reset separado do Explorer e bateria dedicada de 93 verificações. Consulte `docs/FOG_AUDIT_V092.md`.

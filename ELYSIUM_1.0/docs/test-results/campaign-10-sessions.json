@@ -1,0 +1,1008 @@
+{
+  "summary": {
+    "version": "1.0.0",
+    "campaign": "10 sessions",
+    "passed": 154,
+    "total": 154,
+    "failed": 0,
+    "failedTests": [],
+    "sessions": [
+      {
+        "session": 1,
+        "title": "Prólogo, contas, Crônica, convites e fichas",
+        "passed": 30,
+        "total": 30,
+        "failed": []
+      },
+      {
+        "session": 2,
+        "title": "Investigação: cenas, diretórios, notas, diário e comunicação",
+        "passed": 22,
+        "total": 22,
+        "failed": []
+      },
+      {
+        "session": 3,
+        "title": "Primeiro conflito: paredes, Fog, rolagens, pausa e combate",
+        "passed": 17,
+        "total": 17,
+        "failed": []
+      },
+      {
+        "session": 4,
+        "title": "Cena cinematográfica: mídia, evento, cutscene e transmissão",
+        "passed": 10,
+        "total": 10,
+        "failed": []
+      },
+      {
+        "session": 5,
+        "title": "Labirinto: Fog avançada, portas secretas, iluminação e clima",
+        "passed": 12,
+        "total": 12,
+        "failed": []
+      },
+      {
+        "session": 6,
+        "title": "Ferramentas de diretório: itens, tabelas, cartas, macros e compêndio",
+        "passed": 13,
+        "total": 13,
+        "failed": []
+      },
+      {
+        "session": 7,
+        "title": "Mudança de atos: múltiplas cenas, grids, navegação e GM-only",
+        "passed": 8,
+        "total": 8,
+        "failed": []
+      },
+      {
+        "session": 8,
+        "title": "Permissões reais: Co-Mestre, Jogadores, Espectador e Admin",
+        "passed": 10,
+        "total": 10,
+        "failed": []
+      },
+      {
+        "session": 9,
+        "title": "Sessão longa: carga, concorrência, histórico, cursores e estabilidade",
+        "passed": 8,
+        "total": 8,
+        "failed": []
+      },
+      {
+        "session": 10,
+        "title": "Finale: progressão, encerramento, reinício e integridade de campanha",
+        "passed": 13,
+        "total": 13,
+        "failed": []
+      }
+    ]
+  },
+  "results": [
+    {
+      "session": 1,
+      "name": "Rede/sistema responde",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 1,
+      "name": "Cadastro do primeiro usuário vira Admin/Dono",
+      "ok": true,
+      "ms": 47
+    },
+    {
+      "session": 1,
+      "name": "Cadastro Co-Mestre",
+      "ok": true,
+      "ms": 51
+    },
+    {
+      "session": 1,
+      "name": "Cadastro Alice",
+      "ok": true,
+      "ms": 48
+    },
+    {
+      "session": 1,
+      "name": "Cadastro Bruno",
+      "ok": true,
+      "ms": 47
+    },
+    {
+      "session": 1,
+      "name": "Cadastro Carla",
+      "ok": true,
+      "ms": 54
+    },
+    {
+      "session": 1,
+      "name": "Cadastro Espectador",
+      "ok": true,
+      "ms": 47
+    },
+    {
+      "session": 1,
+      "name": "Cadastro Forasteiro",
+      "ok": true,
+      "ms": 43
+    },
+    {
+      "session": 1,
+      "name": "Cadastro duplicado é rejeitado",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 1,
+      "name": "Upload de banner PNG real",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 1,
+      "name": "Upload rejeita MIME incompatível",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 1,
+      "name": "Crônica criada",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 1,
+      "name": "Edição de metadados da Crônica",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 1,
+      "name": "Convite co-master e entrada de co",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 1,
+      "name": "Convite player e entrada de p1",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 1,
+      "name": "Convite player e entrada de p2",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 1,
+      "name": "Convite player e entrada de p3",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 1,
+      "name": "Convite spectator e entrada de spec",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 1,
+      "name": "Convite inválido é rejeitado",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 1,
+      "name": "Forasteiro não acessa Crônica",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 1,
+      "name": "Membros e papéis corretos",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 1,
+      "name": "Presença heartbeat de todos",
+      "ok": true,
+      "ms": 20
+    },
+    {
+      "session": 1,
+      "name": "Criação da ficha Helena Prado",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 1,
+      "name": "Criação da ficha Davi Moraes",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 1,
+      "name": "Criação da ficha Lívia Reis",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 1,
+      "name": "Espectador não cria ficha",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 1,
+      "name": "Upload e edição completa de avatar/ficha",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 1,
+      "name": "Jogador não edita ficha alheia",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 1,
+      "name": "Mestre concede XP",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 1,
+      "name": "Jogador não concede XP",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 2,
+      "name": "Uploads de mapa, foreground e áudio reais",
+      "ok": true,
+      "ms": 7
+    },
+    {
+      "session": 2,
+      "name": "Criar pasta de cenas",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 2,
+      "name": "Criar cena VTT quadrada completa",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 2,
+      "name": "Bootstrap VTT carrega cena e permissões",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 2,
+      "name": "Co-Mestre possui gestão VTT",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 2,
+      "name": "Criar NPC",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 2,
+      "name": "Criar token dos três jogadores + NPC",
+      "ok": true,
+      "ms": 12
+    },
+    {
+      "session": 2,
+      "name": "Criar tile under/over/GM e filtrar GM layer do jogador",
+      "ok": true,
+      "ms": 10
+    },
+    {
+      "session": 2,
+      "name": "Jogador cria desenho livre",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 2,
+      "name": "Mestre cria retângulo, elipse e texto",
+      "ok": true,
+      "ms": 12
+    },
+    {
+      "session": 2,
+      "name": "Espectador não desenha",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 2,
+      "name": "Criar luz, som, nota e região",
+      "ok": true,
+      "ms": 13
+    },
+    {
+      "session": 2,
+      "name": "Ping e FX aparecem como pings temporários",
+      "ok": true,
+      "ms": 7
+    },
+    {
+      "session": 2,
+      "name": "Presença VTT registra cursor remoto",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 2,
+      "name": "Notas: master oculta, pública preparada e selecionada",
+      "ok": true,
+      "ms": 11
+    },
+    {
+      "session": 2,
+      "name": "Jogador cria nota privada ao Mestre",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 2,
+      "name": "Chat geral, notas e sussurro isolado",
+      "ok": true,
+      "ms": 9
+    },
+    {
+      "session": 2,
+      "name": "Diário público e privado",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 2,
+      "name": "Story temporada/episódio/ato/cena",
+      "ok": true,
+      "ms": 9
+    },
+    {
+      "session": 2,
+      "name": "Timeline all/partial/master filtra segredo",
+      "ok": true,
+      "ms": 12
+    },
+    {
+      "session": 2,
+      "name": "Mapa narrativo com marcador",
+      "ok": true,
+      "ms": 12
+    },
+    {
+      "session": 2,
+      "name": "Relógio narrativo criado e avança",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 3,
+      "name": "Parede completa e porta fechada",
+      "ok": true,
+      "ms": 9
+    },
+    {
+      "session": 3,
+      "name": "Fog global revela área e persiste",
+      "ok": true,
+      "ms": 9
+    },
+    {
+      "session": 3,
+      "name": "Explorer respeita parede",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 3,
+      "name": "Jogador não altera Fog global",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 3,
+      "name": "Porta fechada bloqueia movimento",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 3,
+      "name": "Jogador abre porta normal e atravessa",
+      "ok": true,
+      "ms": 13
+    },
+    {
+      "session": 3,
+      "name": "Porta trancada bloqueia jogador",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 3,
+      "name": "Combate detalhado criado",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 3,
+      "name": "Solicitação de rolagem enviada ao jogador certo",
+      "ok": true,
+      "ms": 8
+    },
+    {
+      "session": 3,
+      "name": "Solicitação com personagem de outro jogador é rejeitada",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 3,
+      "name": "Rolagem solicitada conclui request e usa Fome da ficha",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 3,
+      "name": "Rolagem VTT pública aparece para outros",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 3,
+      "name": "Rolagem secreta do Mestre é filtrada",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 3,
+      "name": "Jogador não pode tornar rolagem secreta",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 3,
+      "name": "Espectador não rola",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 3,
+      "name": "Pausa global bloqueia movimento do jogador e não do Mestre",
+      "ok": true,
+      "ms": 8
+    },
+    {
+      "session": 3,
+      "name": "Borracha: jogador apaga próprio desenho, não objeto do Mestre",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 4,
+      "name": "Upload MP4 real de cutscene",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 4,
+      "name": "Criar e ativar mídia de áudio local",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 4,
+      "name": "Criar evento narrativo e ativar",
+      "ok": true,
+      "ms": 12
+    },
+    {
+      "session": 4,
+      "name": "Criar cutscene local",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 4,
+      "name": "Lançar cutscene substitui estado ao vivo",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 4,
+      "name": "Pausar cutscene salva posição",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 4,
+      "name": "Retomar cutscene",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 4,
+      "name": "Encerrar cutscene remove overlay do estado live",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 4,
+      "name": "Desativar mídia e evento",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 4,
+      "name": "Página de transmissão é servida",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 5,
+      "name": "Criar cena hex-row escura com cinzas",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 5,
+      "name": "Tokens recriados na nova cena",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 5,
+      "name": "Barreira até bordas + porta secreta fechada",
+      "ok": true,
+      "ms": 9
+    },
+    {
+      "session": 5,
+      "name": "Porta secreta é mascarada para jogador",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 5,
+      "name": "Jogador não manipula passagem secreta",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 5,
+      "name": "Explorer não vaza por borda nem secreta",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 5,
+      "name": "Mestre abre secreta e visão atravessa sem revelar tipo",
+      "ok": true,
+      "ms": 10
+    },
+    {
+      "session": 5,
+      "name": "Token sem visão não grava Explorer",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 5,
+      "name": "Explorer desligado bloqueia gravação",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 5,
+      "name": "Reset global preserva Explorer e Limpar Explorer apaga",
+      "ok": true,
+      "ms": 11
+    },
+    {
+      "session": 5,
+      "name": "Luzes ocultas filtradas do jogador",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 5,
+      "name": "Cena mantém grid hex e clima",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 6,
+      "name": "Criar item público com imagem e dados",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 6,
+      "name": "Criar item master-only e filtrar jogador",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 6,
+      "name": "Editar item",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 6,
+      "name": "Tabela rolável criada e jogador rola",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 6,
+      "name": "Tabela secreta do Mestre não posta resultado público",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 6,
+      "name": "Baralho: criar, comprar até vazio, conflito 409, reset e shuffle",
+      "ok": true,
+      "ms": 16
+    },
+    {
+      "session": 6,
+      "name": "Macro privada do jogador não aparece para outro",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 6,
+      "name": "Macro compartilhada aparece para todos",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 6,
+      "name": "Jogador não edita macro de outro",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 6,
+      "name": "Dono pode editar macro compartilhada",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 6,
+      "name": "Hotbar aceita macros em páginas 2–5",
+      "ok": true,
+      "ms": 7
+    },
+    {
+      "session": 6,
+      "name": "Hotbar limita slot acima de 49",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 6,
+      "name": "Compêndio, hotbar e comandos de UI existem no frontend",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 7,
+      "name": "Criar cena hex-column",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 7,
+      "name": "Criar cena gridless",
+      "ok": true,
+      "ms": 9
+    },
+    {
+      "session": 7,
+      "name": "Criar cena GM-only invisível",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 7,
+      "name": "Ativar cena GM-only permite acesso por ser atual",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 7,
+      "name": "Editar cena troca grid, darkness e weather sem perder ID",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 7,
+      "name": "Pasta temporária pode ser removida sem apagar cenas",
+      "ok": true,
+      "ms": 7
+    },
+    {
+      "session": 7,
+      "name": "Cena temporária pode ser criada e deletada com cascade",
+      "ok": true,
+      "ms": 7
+    },
+    {
+      "session": 7,
+      "name": "Ativação entre cenas mantém apenas uma atual",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 8,
+      "name": "Co-Mestre cria cena e objetos administrativos",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 8,
+      "name": "Jogador não cria token/tile/wall/luz/som/nota/região",
+      "ok": true,
+      "ms": 7
+    },
+    {
+      "session": 8,
+      "name": "Espectador não movimenta token",
+      "ok": true,
+      "ms": 5
+    },
+    {
+      "session": 8,
+      "name": "Jogador não apaga ping de outro",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 8,
+      "name": "Mestre limpa marcações sem apagar tokens/tiles",
+      "ok": true,
+      "ms": 11
+    },
+    {
+      "session": 8,
+      "name": "Co-Mestre pode pausar e retomar",
+      "ok": true,
+      "ms": 15
+    },
+    {
+      "session": 8,
+      "name": "Promover jogador a co-master e voltar a player",
+      "ok": true,
+      "ms": 10
+    },
+    {
+      "session": 8,
+      "name": "Dono não pode ter papel alterado",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 8,
+      "name": "Admin overview lista campanha e usuários",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 8,
+      "name": "Não-admin não acessa painel Admin",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 9,
+      "name": "Ativar cena de carga",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 9,
+      "name": "50 mensagens concorrentes sem perda",
+      "ok": true,
+      "ms": 145
+    },
+    {
+      "session": 9,
+      "name": "30 pings/FX concorrentes",
+      "ok": true,
+      "ms": 71
+    },
+    {
+      "session": 9,
+      "name": "25 rolagens concorrentes de jogadores",
+      "ok": true,
+      "ms": 62
+    },
+    {
+      "session": 9,
+      "name": "Explorer concorrente mantém isolamento",
+      "ok": true,
+      "ms": 105
+    },
+    {
+      "session": 9,
+      "name": "100 atualizações de presença/cursor não quebram bootstrap",
+      "ok": true,
+      "ms": 134
+    },
+    {
+      "session": 9,
+      "name": "Bootstrap em estado carregado responde e contém diretórios",
+      "ok": true,
+      "ms": 2
+    },
+    {
+      "session": 9,
+      "name": "Chat incremental after funciona",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 10,
+      "name": "Atualizar recursos finais das fichas",
+      "ok": true,
+      "ms": 7
+    },
+    {
+      "session": 10,
+      "name": "XP final para todos",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 10,
+      "name": "Relógio completa e conflito encerra",
+      "ok": true,
+      "ms": 6
+    },
+    {
+      "session": 10,
+      "name": "Recap final no Diário e Timeline",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 10,
+      "name": "Cutscene final lança e encerra",
+      "ok": true,
+      "ms": 4
+    },
+    {
+      "session": 10,
+      "name": "Crônica marcada como encerrada",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 10,
+      "name": "Logout invalida sessão e login restaura",
+      "ok": true,
+      "ms": 49
+    },
+    {
+      "session": 10,
+      "name": "Estado antes do restart está completo",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 10,
+      "name": "Reiniciar servidor preserva banco e uploads",
+      "ok": true,
+      "ms": 181
+    },
+    {
+      "session": 10,
+      "name": "Jogadores relogam após restart e veem histórico",
+      "ok": true,
+      "ms": 46
+    },
+    {
+      "session": 10,
+      "name": "SQLite integrity_check e foreign_key_check limpos",
+      "ok": true,
+      "ms": 3
+    },
+    {
+      "session": 10,
+      "name": "Crescimento de dados da campanha é coerente",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Cascade de exclusão em Crônica descartável",
+      "ok": true,
+      "ms": 54
+    },
+    {
+      "session": 10,
+      "name": "TODAS as 15 ferramentas da barra existem no HTML",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Todos os diretórios principais existem",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Tutorial cobre cenas, navegação, desenho, Fog, rolagem e Cutscene",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Ferramenta medir implementa régua, raio e cone",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Setas da hotbar têm handlers e paginação real",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Controles de zoom, fit, Player View e sidebar têm handlers",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Exportação de chat possui implementação",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Dados visuais usam d10 e overlay central",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Nenhum input URL nativo na interface VTT",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Uploads locais existem para cena, tile, token, item e cutscene",
+      "ok": true,
+      "ms": 1
+    },
+    {
+      "session": 10,
+      "name": "Modo transmissão sincroniza cutscene e rolagem",
+      "ok": true,
+      "ms": 0
+    }
+  ]
+}

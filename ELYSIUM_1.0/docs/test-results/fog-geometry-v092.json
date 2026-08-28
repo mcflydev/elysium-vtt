@@ -1,0 +1,90 @@
+{
+  "passed": 21,
+  "total": 21,
+  "results": [
+    {
+      "name": "Retângulos sem interseção não se alteram",
+      "ok": true
+    },
+    {
+      "name": "Ocultar fora da área preserva revelação",
+      "ok": true
+    },
+    {
+      "name": "Ocultar área inteira remove revelação",
+      "ok": true
+    },
+    {
+      "name": "Ocultar centro cria quatro fragmentos",
+      "ok": true
+    },
+    {
+      "name": "Ocultar faixa superior preserva o restante",
+      "ok": true
+    },
+    {
+      "name": "Recortes repetidos nunca geram área negativa",
+      "ok": true
+    },
+    {
+      "name": "Shape legado retangular continua aceito",
+      "ok": true
+    },
+    {
+      "name": "Shape poligonal do Explorer é aceito",
+      "ok": true
+    },
+    {
+      "name": "Shape inválido é ignorado",
+      "ok": true
+    },
+    {
+      "name": "Token sem visão não gera polígono",
+      "ok": true
+    },
+    {
+      "name": "Token com alcance zero não gera polígono",
+      "ok": true
+    },
+    {
+      "name": "Sem paredes, visão alcança aproximadamente o raio configurado",
+      "ok": true
+    },
+    {
+      "name": "Parede fechada corta visão",
+      "ok": true
+    },
+    {
+      "name": "Parede que não bloqueia visão é ignorada",
+      "ok": true
+    },
+    {
+      "name": "Porta fechada corta visão",
+      "ok": true
+    },
+    {
+      "name": "Porta aberta libera visão",
+      "ok": true
+    },
+    {
+      "name": "Bloqueador secreto mascarado fechado corta visão",
+      "ok": true
+    },
+    {
+      "name": "Bloqueador secreto mascarado aberto libera visão",
+      "ok": true
+    },
+    {
+      "name": "visionBlockingWalls respeita porta aberta e blocks_vision",
+      "ok": true
+    },
+    {
+      "name": "raySegment detecta colisão frontal",
+      "ok": true
+    },
+    {
+      "name": "raySegment ignora raio na direção oposta",
+      "ok": true
+    }
+  ]
+}

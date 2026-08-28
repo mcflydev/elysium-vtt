@@ -1,0 +1,118 @@
+{
+  "passed": 28,
+  "total": 28,
+  "results": [
+    {
+      "name": "Fog é ferramenta restrita à narração",
+      "ok": true
+    },
+    {
+      "name": "Modo inicia em Revelar",
+      "ok": true
+    },
+    {
+      "name": "Select reflete state.fogMode ao renderizar",
+      "ok": true
+    },
+    {
+      "name": "Mudança do select persiste em state.fogMode",
+      "ok": true
+    },
+    {
+      "name": "Finalização da ferramenta usa state.fogMode e não o select recriado",
+      "ok": true
+    },
+    {
+      "name": "Ocultar usa subtração geométrica parcial",
+      "ok": true
+    },
+    {
+      "name": "Polling não reconstrói opções da ferramenta",
+      "ok": true
+    },
+    {
+      "name": "refreshScene não reconstrói opções da ferramenta",
+      "ok": true
+    },
+    {
+      "name": "Sincronização protege Fog local durante escrita",
+      "ok": true
+    },
+    {
+      "name": "Sincronização protege Explorer local durante escrita",
+      "ok": true
+    },
+    {
+      "name": "Explorer usa tokenId e cálculo do servidor",
+      "ok": true
+    },
+    {
+      "name": "Explorer não roda para token sem visão",
+      "ok": true
+    },
+    {
+      "name": "Renderização aceita Explorer poligonal e retângulo legado",
+      "ok": true
+    },
+    {
+      "name": "Visão atual usa apenas tokens com vision_enabled",
+      "ok": true
+    },
+    {
+      "name": "Fog combina visão de múltiplos tokens controlados",
+      "ok": true
+    },
+    {
+      "name": "Iluminação combina visão de múltiplos tokens controlados",
+      "ok": true
+    },
+    {
+      "name": "Parede enviada ao jogador só cria handle se não for wall",
+      "ok": true
+    },
+    {
+      "name": "Servidor mascara porta secreta como parede comum",
+      "ok": true
+    },
+    {
+      "name": "Servidor calcula Explorer usando todas as paredes reais",
+      "ok": true
+    },
+    {
+      "name": "Jogador não grava Fog global",
+      "ok": true
+    },
+    {
+      "name": "Explorer arbitrário do cliente não é aceito",
+      "ok": true
+    },
+    {
+      "name": "Servidor limita Explorer a 100 snapshots",
+      "ok": true
+    },
+    {
+      "name": "Servidor limita Fog global a 500 fragmentos",
+      "ok": true
+    },
+    {
+      "name": "Reset manual tem nome explícito",
+      "ok": true
+    },
+    {
+      "name": "Limpeza de Explorer aparece quando Explorer está ativo",
+      "ok": true
+    },
+    {
+      "name": "Limpeza de Explorer exige Mestre no servidor",
+      "ok": true
+    },
+    {
+      "name": "Tutorial explica Revelar/Ocultar/Explorer",
+      "ok": true
+    },
+    {
+      "name": "Módulo geométrico bloqueia token sem visão",
+      "ok": true
+    }
+  ]
+}

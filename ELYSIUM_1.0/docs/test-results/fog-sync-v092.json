@@ -1,0 +1,34 @@
+{
+  "passed": 7,
+  "total": 7,
+  "results": [
+    {
+      "name": "Sem escrita pendente, polling adota estado do servidor",
+      "ok": true
+    },
+    {
+      "name": "Escrita global pendente preserva Fog global local",
+      "ok": true
+    },
+    {
+      "name": "Polling iniciado antes de edição global não sobrescreve edição",
+      "ok": true
+    },
+    {
+      "name": "Polling novo após edição global volta a aceitar servidor",
+      "ok": true
+    },
+    {
+      "name": "Escrita Explorer pendente preserva histórico local",
+      "ok": true
+    },
+    {
+      "name": "Polling iniciado antes de Explorer novo não apaga exploração recente",
+      "ok": true
+    },
+    {
+      "name": "Global e Explorer podem ser protegidos ao mesmo tempo",
+      "ok": true
+    }
+  ]
+}
