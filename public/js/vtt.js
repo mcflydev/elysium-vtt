@@ -23,6 +23,7 @@ const state = {
     pings: [],
     world: { paused:false },
     tool: "select",
+    fogMode: "reveal",
     zoom: 1,
     panX: 0,
     panY: 0,
@@ -132,7 +133,7 @@ async function openScene(sceneId, {fit=false}={}) {
     state.fog = data.fog;
     state.pings = data.pings;
     state.selected = null; state.selectedTokens.clear();
-    renderScene(); renderSceneNavigation(); renderSceneDirectory(); renderInspector();
+    renderScene(); renderSceneNavigation(); renderSceneDirectory(); renderInspector(); renderToolOptions();
     if (fit) fitScene(); else applyStageTransform();
     updateAmbientSounds();
 }
@@ -158,7 +159,7 @@ function renderScene() {
     $("#lighting-layer").width=scene.width; $("#lighting-layer").height=scene.height; $("#fog-layer").width=scene.width; $("#fog-layer").height=scene.height;
     [$("#drawing-layer"),$("#wall-layer"),$("#measure-layer")].forEach(svg=>{svg.setAttribute("viewBox",`0 0 ${scene.width} ${scene.height}`)});
     $("#active-scene-label").textContent = scene.title.toUpperCase();
-    renderTiles(); renderDrawings(); renderRegions(); renderTokens(); renderWalls(); renderNotes(); renderGmMarkers(); renderWeather(); renderPings(); renderLighting(); renderFog(); renderToolOptions();
+    renderTiles(); renderDrawings(); renderRegions(); renderTokens(); renderWalls(); renderNotes(); renderGmMarkers(); renderWeather(); renderPings(); renderLighting(); renderFog();
 }
 
 function renderSceneNavigation() {
@@ -233,10 +234,10 @@ function renderToolOptions(){const box=$("#tool-options");if(!state.scene){box.i
     if(state.tool==="measure")html+=`<label>Medida <select id="measure-type"><option value="ruler">Régua</option><option value="radius">Raio</option><option value="cone">Cone 60°</option></select></label>`;
     if(state.tool==="wall")html+=`<label>Tipo <select id="wall-type"><option value="wall">Parede</option><option value="door">Porta</option><option value="secret">Porta secreta</option></select></label><label><input id="wall-move" type="checkbox" checked> movimento</label><label><input id="wall-vision" type="checkbox" checked> visão</label>`;
     if(state.tool==="draw")html+=`<label>Forma <select id="draw-type"><option value="freehand">Livre</option><option value="rect">Retângulo</option><option value="ellipse">Elipse</option><option value="text">Texto</option></select></label><label>Cor <input id="draw-color" type="color" value="#b23750"></label><label>Traço <input id="draw-width" type="number" min="1" max="20" value="3" style="width:50px"></label>`;
-    if(state.tool==="fog")html+=`<label>Modo <select id="fog-mode"><option value="reveal">Revelar</option><option value="hide">Ocultar</option></select></label><button class="mini-button" id="fog-reset" type="button">Resetar</button>`;
+    if(state.tool==="fog")html+=`<label>Modo <select id="fog-mode"><option value="reveal" ${state.fogMode==="reveal"?"selected":""}>Revelar</option><option value="hide" ${state.fogMode==="hide"?"selected":""}>Ocultar</option></select></label><button class="mini-button" id="fog-reset" type="button">Resetar</button>`;
     if(state.tool==="erase")html+=state.canManage?`<span class="scene-chip muted">Clique em qualquer objeto para apagar</span><button class="mini-button" id="clear-markings" type="button">Limpar marcações da cena</button>`:`<span class="scene-chip muted">Clique nos seus desenhos ou pings para apagar</span>`;
     if(["token","tile","region"].includes(state.tool))html+=`<label><input id="snap-grid" type="checkbox" checked> snap ${size}px</label>`;
-    box.innerHTML=html;const reset=$("#fog-reset");if(reset)reset.onclick=async()=>{if(!confirm("Resetar as áreas reveladas desta cena?"))return;state.fog.global.revealed=[];await saveFogGlobal();renderFog();};const clear=$("#clear-markings");if(clear)clear.onclick=async()=>{if(!confirm("Apagar desenhos, paredes, notas, regiões e pings desta cena? Tokens, tiles e o mapa serão preservados."))return;await api(`/api/vtt/scenes/${state.scene.id}/clear-markings`,{method:"POST"});await refreshScene();toast("Marcações da cena limpas.");};
+    box.innerHTML=html;const fogMode=$("#fog-mode");if(fogMode)fogMode.onchange=()=>{state.fogMode=fogMode.value==="hide"?"hide":"reveal";};const reset=$("#fog-reset");if(reset)reset.onclick=async()=>{if(!confirm("Resetar as áreas reveladas desta cena?"))return;state.fog.global.revealed=[];await saveFogGlobal();renderFog();};const clear=$("#clear-markings");if(clear)clear.onclick=async()=>{if(!confirm("Apagar desenhos, paredes, notas, regiões e pings desta cena? Tokens, tiles e o mapa serão preservados."))return;await api(`/api/vtt/scenes/${state.scene.id}/clear-markings`,{method:"POST"});await refreshScene();toast("Marcações da cena limpas.");};
 }
 $$('[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
 
@@ -262,9 +263,10 @@ function updateDrawingDraft(p){const d=state.drag;if(d.drawingType==="freehand")
 async function finishDrawingDraft(d){$("#measure-layer").innerHTML="";const stroke=$("#draw-color")?.value||"#b23750",strokeWidth=Number($("#draw-width")?.value)||3;if(d.drawingType==="freehand"){if(d.points.length<2)return;await api(`/api/vtt/scenes/${state.scene.id}/drawings`,{method:"POST",body:JSON.stringify({drawingType:"freehand",points:d.points,stroke,strokeWidth})});}else{const x=Math.min(d.start.x,d.end.x),y=Math.min(d.start.y,d.end.y),width=Math.abs(d.end.x-d.start.x),height=Math.abs(d.end.y-d.start.y);if(width<5||height<5)return;await api(`/api/vtt/scenes/${state.scene.id}/drawings`,{method:"POST",body:JSON.stringify({drawingType:d.drawingType,x,y,width,height,stroke,fill:"transparent",strokeWidth})});}await refreshScene();}
 function startRectDraft(p,kind){state.drag={kind,start:p,end:p};updateRectDraft(p,kind);}
 function updateRectDraft(p,kind){state.drag.end=p;const s=state.drag.start,x=Math.min(s.x,p.x),y=Math.min(s.y,p.y),w=Math.abs(p.x-s.x),h=Math.abs(p.y-s.y);$("#measure-layer").innerHTML=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${kind==='fog'?'rgba(120,20,40,.18)':'rgba(125,26,42,.12)'}" stroke="#b23750" stroke-width="2" stroke-dasharray="7 5"/>`;}
-async function finishFogDraft(d){$("#measure-layer").innerHTML="";const x=Math.min(d.start.x,d.end.x),y=Math.min(d.start.y,d.end.y),w=Math.abs(d.end.x-d.start.x),h=Math.abs(d.end.y-d.start.y);if(w<8||h<8)return;const mode=$("#fog-mode")?.value||"reveal";if(mode==="reveal")state.fog.global.revealed.push({x,y,w,h});else state.fog.global.revealed=state.fog.global.revealed.filter(r=>!rectOverlap(r,{x,y,w,h}));await saveFogGlobal();renderFog();}
+async function finishFogDraft(d){$("#measure-layer").innerHTML="";const x=Math.min(d.start.x,d.end.x),y=Math.min(d.start.y,d.end.y),w=Math.abs(d.end.x-d.start.x),h=Math.abs(d.end.y-d.start.y);if(w<8||h<8)return;const area={x,y,w,h},mode=state.fogMode||"reveal";if(mode==="reveal")state.fog.global.revealed.push(area);else state.fog.global.revealed=state.fog.global.revealed.flatMap(r=>subtractRect(r,area));await saveFogGlobal();renderFog();}
 async function finishRegionDraft(d){$("#measure-layer").innerHTML="";const x=Math.min(d.start.x,d.end.x),y=Math.min(d.start.y,d.end.y),width=Math.abs(d.end.x-d.start.x),height=Math.abs(d.end.y-d.start.y);if(width<12||height<12)return;openFormDialog({eyebrow:"Scene Region",title:"Criar região",fields:`<label>Nome<input name="name" value="Região"></label><label>Forma<select name="shape"><option value="rect">Retângulo</option><option value="ellipse">Elipse</option></select></label><label>Comportamento / aviso<textarea name="message" placeholder="Mensagem ao entrar na região"></textarea></label>`,onSubmit:async fd=>{await api(`/api/vtt/scenes/${state.scene.id}/regions`,{method:"POST",body:JSON.stringify({name:fd.get("name"),shape:fd.get("shape"),x,y,width,height,behavior:{message:fd.get("message")}})});await refreshScene();}});}
 function rectOverlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
+function subtractRect(rect,cut){if(!rectOverlap(rect,cut))return[rect];const rx2=rect.x+rect.w,ry2=rect.y+rect.h,cx1=Math.max(rect.x,cut.x),cy1=Math.max(rect.y,cut.y),cx2=Math.min(rx2,cut.x+cut.w),cy2=Math.min(ry2,cut.y+cut.h),pieces=[];if(cy1>rect.y)pieces.push({x:rect.x,y:rect.y,w:rect.w,h:cy1-rect.y});if(cy2<ry2)pieces.push({x:rect.x,y:cy2,w:rect.w,h:ry2-cy2});const middleH=cy2-cy1;if(middleH>0&&cx1>rect.x)pieces.push({x:rect.x,y:cy1,w:cx1-rect.x,h:middleH});if(middleH>0&&cx2<rx2)pieces.push({x:cx2,y:cy1,w:rx2-cx2,h:middleH});return pieces.filter(p=>p.w>0&&p.h>0);}
 async function saveFogGlobal(){await api(`/api/vtt/scenes/${state.scene.id}/fog`,{method:"PUT",body:JSON.stringify({scope:"global",revealed:state.fog.global.revealed,explored:state.fog.global.explored})});}
 
 function startTokenDrag(event){if(state.tool!=="select")return;event.stopPropagation();const id=Number(event.currentTarget.dataset.objectId),token=state.objects.tokens.find(t=>t.id===id);if(!tokenCanMove(token))return;const start=stagePoint(event);state.drag={kind:"token",id,token,start,orig:{x:token.x,y:token.y},offset:{x:start.x-token.x,y:start.y-token.y}};event.currentTarget.setPointerCapture?.(event.pointerId);const move=ev=>dragTokenMove(ev);const up=async ev=>{window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);await finishTokenDrag(ev);};window.addEventListener("pointermove",move);window.addEventListener("pointerup",up,{once:true});}
