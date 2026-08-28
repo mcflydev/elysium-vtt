@@ -44,9 +44,9 @@ Alguns itens do documento estão presentes como uma primeira versão funcional, 
 - **Tempo real:** polling, não WebSocket.
 - **YouTube:** pesquisa abre o YouTube; sem YouTube Data API.
 - **Sincronização musical:** estado ativo sincronizado; autoplay depende do navegador.
-- **Mapa tático:** grid + marcadores; ainda sem fog of war avançado ou drag-and-drop de tokens.
+- **Mapa tático:** grid, tokens, tiles, paredes/portas, Fog of War, iluminação, regiões e drag-and-drop de tokens; ainda não pretende reproduzir todos os módulos/ecossistema de um VTT comercial.
 - **Conflitos detalhados:** rastreador de rodada e participantes; não é um motor tático completo.
-- **Cutscenes:** URLs e etapas; sem upload/streaming próprio.
+- **Cutscenes:** upload local MP4/WebM, sincronização por polling, Lançar/Pausar/Retomar/Encerrar e retorno automático ao mapa. O navegador ainda pode exigir um clique para liberar autoplay.
 - **OBS/Transmissão:** tela limpa funcional, ainda sem editor de overlay.
 - **Recap:** registrado manualmente no Diário, sem geração automática.
 

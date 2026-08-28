@@ -1,4 +1,4 @@
-import { apiRequest, ApiError } from "./api.js";
+import { apiRequest, ApiError, uploadLocalFile } from "./api.js";
 
 const params = new URLSearchParams(location.search);
 const chronicleId = Number(params.get("id"));
@@ -15,7 +15,6 @@ const state = {
     notes: [],
     live: null,
     lastMessageId: 0,
-    dismissedCutsceneId: null,
     lastSeenRollId: null,
     currentRequestId: null,
     rollRequests: [],
@@ -77,6 +76,7 @@ async function request(path, options) {
 
 // ---------- NAVEGAÇÃO ----------
 function activateTab(name) {
+    document.body.classList.toggle("room-mode", name === "room");
     $$(".nav-button[data-tab]").forEach((button) => button.classList.toggle("active", button.dataset.tab === name));
     $$(".page-section").forEach((section) => section.classList.toggle("active", section.id === `tab-${name}`));
     $("#sidebar").classList.remove("open");
@@ -87,6 +87,7 @@ function activateTab(name) {
     text("#page-title", title); text("#page-subtitle", subtitle);
 }
 $$(".nav-button[data-tab]").forEach((button) => button.addEventListener("click", () => activateTab(button.dataset.tab)));
+$("#open-vtt")?.addEventListener("click", () => { window.location.href = `/pages/vtt.html?id=${chronicleId}`; });
 $("#mobile-nav").addEventListener("click", () => $("#sidebar").classList.toggle("open"));
 $("#refresh-button").addEventListener("click", () => loadAll(true));
 
@@ -94,6 +95,7 @@ $("#refresh-button").addEventListener("click", () => loadAll(true));
 function renderChronicle() {
     const c = state.chronicle;
     text("#sidebar-title", c.name); text("#sidebar-role", roleLabel(state.role));
+    text("#room-chronicle-name", c.name);
     text("#chronicle-title", c.name);
     text("#chronicle-description", c.description || "Nenhuma descrição registrada.");
     text("#chronicle-meta", [c.city, c.period, c.style, statusLabel(c.status)].filter(Boolean).join(" • "));
@@ -101,7 +103,7 @@ function renderChronicle() {
     hero.style.backgroundImage = c.banner_url ? `url("${c.banner_url.replaceAll('"','%22')}")` : "";
     $("#transmission-link").href = `/pages/transmissao.html?id=${chronicleId}`;
     $("#edit-name").value = c.name; $("#edit-subtitle").value = c.subtitle || ""; $("#edit-city").value = c.city || "";
-    $("#edit-period").value = c.period || ""; $("#edit-style").value = c.style || ""; $("#edit-banner").value = c.banner_url || "";
+    $("#edit-period").value = c.period || ""; $("#edit-style").value = c.style || "";
     $("#edit-description").value = c.description || ""; $("#edit-status").value = c.status;
 }
 function renderMembers() {
@@ -113,6 +115,12 @@ function renderMembers() {
     $("#request-user").innerHTML = state.members.filter(m=>m.role==="player"||m.role==="co-master"||m.role==="master"||m.role==="owner").map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join("");
     $("#note-recipients").innerHTML = state.members.filter(m=>m.id!==state.me.id).map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join("");
     $("#chat-recipient").innerHTML = state.members.filter(m=>m.id!==state.me.id).map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join("");
+    const roomRecipient=$("#room-chat-recipient");
+    if(roomRecipient) roomRecipient.innerHTML = state.members.filter(m=>m.id!==state.me.id).map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join("");
+    const onlineCount=state.members.filter(m=>m.is_online).length;
+    text("#room-online-count", `${onlineCount} online${onlineCount===1?"":"s"}`);
+    const onlineList=$("#room-online-list");
+    if(onlineList) onlineList.innerHTML=state.members.map(m=>`<div class="room-online-member"><div><strong>${escapeHtml(m.name)}</strong><small>${escapeHtml(roleLabel(m.role))}</small></div><span class="room-online-dot ${m.is_online?'online':''}" title="${m.is_online?'Online':'Offline'}"></span></div>`).join("");
     if (state.canManage) renderDirectorMembers();
 }
 $("#invite-form").addEventListener("submit", async (event) => {
@@ -122,9 +130,13 @@ $("#invite-form").addEventListener("submit", async (event) => {
 });
 $("#chronicle-edit-form").addEventListener("submit", async (event) => {
     event.preventDefault();
+    let bannerUrl = state.chronicle?.banner_url || "";
+    const bannerFile = $("#edit-banner")?.files?.[0];
+    if (bannerFile) bannerUrl = (await uploadLocalFile(bannerFile, "image")).url;
     await request(`/api/chronicles/${chronicleId}`, { method:"PATCH", body:JSON.stringify({
-        name:val("#edit-name"), subtitle:val("#edit-subtitle"), city:val("#edit-city"), period:val("#edit-period"), style:val("#edit-style"), bannerUrl:val("#edit-banner"), description:val("#edit-description"), status:val("#edit-status")
+        name:val("#edit-name"), subtitle:val("#edit-subtitle"), city:val("#edit-city"), period:val("#edit-period"), style:val("#edit-style"), bannerUrl, description:val("#edit-description"), status:val("#edit-status")
     }) });
+    event.currentTarget.reset();
     toast("Crônica atualizada."); await loadChronicle();
 });
 $("#delete-chronicle").addEventListener("click", async () => {
@@ -145,10 +157,11 @@ function renderCharacters() {
 }
 $("#character-create-form").addEventListener("submit", async (event) => {
     event.preventDefault();
+    const submittedForm = event.currentTarget;
     const body = { name:val("#char-name"), concept:val("#char-concept"), clan:val("#char-clan"), predator:val("#char-predator") };
     if (state.canManage) body.userId = Number(val("#char-user"));
     const data = await request(`/api/chronicles/${chronicleId}/characters`, { method:"POST", body:JSON.stringify(body) });
-    event.currentTarget.reset(); toast("Personagem criado."); await loadCharacters();
+    submittedForm.reset(); toast("Personagem criado."); await loadCharacters();
     location.href = `/pages/personagem.html?id=${data.characterId}`;
 });
 
@@ -189,11 +202,12 @@ function showRollAnimation(roll) {
 function renderLive() {
     const live=state.live||{}; const scene=live.scene;
     const display=$("#scene-display");
-    if(scene){ display.style.backgroundImage=scene.image_url?`url("${scene.image_url.replaceAll('"','%22')}")`:""; text("#room-scene-title",scene.title);text("#room-scene-meta",[scene.narrative_time,scene.weather].filter(Boolean).join(" • "));text("#room-scene-description",scene.description||""); }
-    else { display.style.backgroundImage=""; text("#room-scene-title","Nenhuma cena ativa");text("#room-scene-meta","");text("#room-scene-description","O Mestre ainda não abriu uma cena."); }
+    if(scene){ display.style.backgroundImage=scene.image_url?`url("${scene.image_url.replaceAll('"','%22')}")`:""; text("#room-scene-title",scene.title);text("#room-scene-meta",[scene.narrative_time,scene.weather].filter(Boolean).join(" • "));text("#room-scene-description",scene.description||"");text("#room-current-scene-label",scene.title.toUpperCase()); }
+    else { display.style.backgroundImage=""; text("#room-scene-title","Nenhuma cena ativa");text("#room-scene-meta","");text("#room-scene-description","O Mestre ainda não abriu uma cena.");text("#room-current-scene-label","AGUARDANDO CENA"); }
     text("#live-media-title",live.media?.title||"Sem mídia ativa"); text("#live-media-url",live.media?.url||"");
+    text("#room-audio-now-title",live.media?.title||"Nenhuma mídia ativa"); text("#room-audio-now-url",live.media?.url||"");
     if (live.media?.id !== state.liveMediaId) {
-        state.liveMediaId=live.media?.id??null; const player=$("#live-media-player"); player.innerHTML="";
+        state.liveMediaId=live.media?.id??null; const player=$("#live-media-player"); player.innerHTML=""; player.hidden=true;
         if(live.media?.url){const embed=youtubeEmbedUrl(live.media.url);if(embed)player.innerHTML=`<iframe title="Música da cena" src="${escapeHtml(embed)}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:7px" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;else player.innerHTML=`<a class="button-ghost" target="_blank" href="${escapeHtml(live.media.url)}">Abrir mídia</a>`;}
     }
     text("#live-event-title",live.event?.title||"Sem evento ativo"); text("#live-event-copy",live.event?.content||"");
@@ -202,13 +216,25 @@ function renderLive() {
         if(state.lastSeenRollId===null) state.lastSeenRollId=live.recentRoll.id;
         else if(live.recentRoll.id!==state.lastSeenRollId){state.lastSeenRollId=live.recentRoll.id;showRollAnimation(live.recentRoll);}
     }
-    if(live.cutscene && live.cutscene.id!==state.dismissedCutsceneId) showCutscene(live.cutscene);
+    if(live.cutscene?.playbackState === "playing" || live.cutscene?.playback_state === "playing") showCutscene(live.cutscene);
+    else hideCutscene();
+}
+function hideCutscene(){
+    const overlay=$("#cutscene-overlay");
+    const video=$("#legacy-cutscene-video");
+    if(video) video.pause();
+    if(overlay) overlay.hidden=true;
 }
 function showCutscene(cutscene) {
-    const overlay=$("#cutscene-overlay"); const content=$("#cutscene-overlay-content"); const steps=cutscene.steps||[];
-    const rendered=steps.map(step=>step.type==="image"?`<img src="${escapeHtml(step.content)}" alt="">`:step.type==="video"?(youtubeEmbedUrl(step.content)?`<iframe title="Vídeo" src="${escapeHtml(youtubeEmbedUrl(step.content))}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin-top:1rem" allow="autoplay; encrypted-media" allowfullscreen></iframe>`:`<p><a class="button" target="_blank" href="${escapeHtml(step.content)}">Abrir vídeo</a></p>`):`<p>${escapeHtml(step.content)}</p>`).join("");
-    content.innerHTML=`<p class="eyebrow">Cutscene</p><h2>${escapeHtml(cutscene.title)}</h2>${rendered}<div class="form-actions" style="justify-content:center;margin-top:1.4rem"><button class="button" id="close-cutscene">Continuar</button></div>`;
-    overlay.hidden=false; $("#close-cutscene").addEventListener("click",()=>{state.dismissedCutsceneId=cutscene.id;overlay.hidden=true;});
+    const overlay=$("#cutscene-overlay"); const content=$("#cutscene-overlay-content");
+    if(!overlay||!content||!cutscene.video_url) return;
+    const expected=Number(cutscene.playbackPosition??cutscene.playback_position??0);
+    content.innerHTML=`<p class="eyebrow">Cutscene</p><h2>${escapeHtml(cutscene.title)}</h2><video id="legacy-cutscene-video" src="${escapeHtml(cutscene.video_url)}" playsinline controls style="width:min(1100px,92vw);max-height:75vh;border-radius:10px;background:#000"></video><p class="help">A cena retorna automaticamente quando o Mestre pausa ou encerra a cutscene.</p>`;
+    overlay.hidden=false;
+    const video=$("#legacy-cutscene-video");
+    video.currentTime=Math.max(0,expected);
+    video.play().catch(()=>{});
+    video.addEventListener("ended",()=>{ if(state.canManage) request(`/api/cutscenes/${cutscene.id}/end`,{method:"POST"}).then(loadLive).catch(()=>{}); });
 }
 
 // ---------- SOLICITAÇÕES DE ROLAGEM ----------
@@ -221,21 +247,33 @@ function renderRollRequests(){
         $$(".cancel-roll-request").forEach(b=>b.addEventListener("click",async()=>{await request(`/api/roll-requests/${b.dataset.id}/cancel`,{method:"POST"});await loadRollRequests();}));
     }
 }
-$("#roll-request-form").addEventListener("submit",async e=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/roll-requests`,{method:"POST",body:JSON.stringify({targetUserId:Number(val("#request-user")),characterId:val("#request-character")?Number(val("#request-character")):null,attributeName:val("#request-attribute"),skillName:val("#request-skill"),difficulty:val("#request-difficulty")?Number(val("#request-difficulty")):null,modifier:numberVal("#request-modifier"),prompt:val("#request-prompt")})});e.currentTarget.reset();await loadRollRequests();toast("Teste solicitado ao jogador.");});
+$("#roll-request-form").addEventListener("submit",async e=>{e.preventDefault();const submittedForm=e.currentTarget;await request(`/api/chronicles/${chronicleId}/roll-requests`,{method:"POST",body:JSON.stringify({targetUserId:Number(val("#request-user")),characterId:val("#request-character")?Number(val("#request-character")):null,attributeName:val("#request-attribute"),skillName:val("#request-skill"),difficulty:val("#request-difficulty")?Number(val("#request-difficulty")):null,modifier:numberVal("#request-modifier"),prompt:val("#request-prompt")})});submittedForm.reset();await loadRollRequests();toast("Teste solicitado ao jogador.");});
 
 // ---------- DIRETOR / CENAS / EVENTOS ----------
 function renderScenes() {
-    $("#scene-list").innerHTML=state.scenes.map(s=>`<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(s.title)}</h4><p>${escapeHtml([s.narrative_time,s.weather].filter(Boolean).join(" • "))}</p></div><div class="list-actions">${s.is_current?`<span class="tag success">Atual</span>`:`<button class="button-ghost activate-scene" data-id="${s.id}">Iniciar</button>`}<button class="button-danger delete-scene" data-id="${s.id}">Excluir</button></div></div>`).join("")||`<div class="empty">Nenhuma cena preparada.</div>`;
+    const listHtml=state.scenes.map(s=>`<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(s.title)}</h4><p>${escapeHtml([s.narrative_time,s.weather].filter(Boolean).join(" • "))}</p></div><div class="list-actions">${s.is_current?`<span class="tag success">Atual</span>`:`<button class="button-ghost activate-scene" data-id="${s.id}">Iniciar</button>`}<button class="button-danger delete-scene" data-id="${s.id}">Excluir</button></div></div>`).join("")||`<div class="empty">Nenhuma cena preparada.</div>`;
+    const directorList=$("#scene-list"); if(directorList) directorList.innerHTML=listHtml;
+    const roomList=$("#room-scene-list"); if(roomList) roomList.innerHTML=listHtml;
+    const strip=$("#room-scene-strip");
+    if(strip){
+        if(state.canManage){
+            strip.innerHTML=state.scenes.map(s=>`<button type="button" class="room-scene-chip ${s.is_current?'current':''} ${s.is_current?'':'activate-scene'}" data-id="${s.id}" ${s.is_current?'disabled':''} style="${s.image_url?`background-image:url('${escapeHtml(s.image_url)}')`:''}"><strong>${escapeHtml(s.title)}</strong><small>${escapeHtml([s.narrative_time,s.weather].filter(Boolean).join(" • ")||"Cena preparada")}</small></button>`).join("")||`<span class="help">Nenhuma cena preparada — crie a primeira cena.</span>`;
+        } else {
+            const current=state.scenes.find(s=>s.is_current)||state.live?.scene;
+            strip.innerHTML=current?`<button type="button" class="room-scene-chip current" disabled style="${current.image_url?`background-image:url('${escapeHtml(current.image_url)}')`:''}"><strong>${escapeHtml(current.title)}</strong><small>Cena atual</small></button>`:`<span class="help">Aguardando o Mestre iniciar uma cena.</span>`;
+        }
+    }
     $$(".activate-scene").forEach(b=>b.addEventListener("click",async()=>{await request(`/api/scenes/${b.dataset.id}/activate`,{method:"POST"});await loadScenes();await loadLive();toast("Cena iniciada para a mesa.");}));
     $$(".delete-scene").forEach(b=>b.addEventListener("click",async()=>{if(!confirm("Excluir esta cena?"))return;await request(`/api/scenes/${b.dataset.id}`,{method:"DELETE"});await loadScenes();await loadLive();}));
 }
-$("#scene-form").addEventListener("submit",async(event)=>{event.preventDefault();await request(`/api/chronicles/${chronicleId}/scenes`,{method:"POST",body:JSON.stringify({title:val("#scene-title"),narrativeTime:val("#scene-time"),weather:val("#scene-weather"),imageUrl:val("#scene-image"),description:val("#scene-description")})});event.currentTarget.reset();await loadScenes();toast("Cena preparada.");});
+$("#scene-form").addEventListener("submit",async(event)=>{event.preventDefault();const submittedForm=event.currentTarget;const file=$("#scene-image")?.files?.[0];const imageUrl=file?(await uploadLocalFile(file,"image")).url:"";await request(`/api/chronicles/${chronicleId}/scenes`,{method:"POST",body:JSON.stringify({title:val("#scene-title"),narrativeTime:val("#scene-time"),weather:val("#scene-weather"),imageUrl,description:val("#scene-description")})});submittedForm.reset();await loadScenes();toast("Cena preparada.");});
+$("#room-scene-form").addEventListener("submit",async(event)=>{event.preventDefault();const submittedForm=event.currentTarget;const file=$("#room-scene-image")?.files?.[0];const imageUrl=file?(await uploadLocalFile(file,"image")).url:"";await request(`/api/chronicles/${chronicleId}/scenes`,{method:"POST",body:JSON.stringify({title:val("#room-new-scene-title"),narrativeTime:val("#room-scene-time"),weather:val("#room-scene-weather"),imageUrl,description:val("#room-new-scene-description")})});submittedForm.reset();$("#room-scene-creator").open=false;await loadScenes();toast("Cena preparada.");});
 function renderDirectorMembers(){
     $("#director-members").innerHTML=state.members.map(m=>`<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(m.name)}</h4><p>${escapeHtml(m.email)}</p></div>${m.role==='owner'?`<span class="tag wine">Dono</span>`:`<div class="list-actions"><select class="member-role" data-id="${m.id}"><option value="master" ${m.role==='master'?'selected':''}>Mestre</option><option value="co-master" ${m.role==='co-master'?'selected':''}>Co-Mestre</option><option value="player" ${m.role==='player'?'selected':''}>Jogador</option><option value="spectator" ${m.role==='spectator'?'selected':''}>Espectador</option></select><button class="button-danger remove-member" data-id="${m.id}">Remover</button></div>`}</div>`).join("");
     $$(".member-role").forEach(s=>s.addEventListener("change",async()=>{await request(`/api/chronicles/${chronicleId}/members/${s.dataset.id}`,{method:"PATCH",body:JSON.stringify({role:s.value})});toast("Permissão alterada.");await loadMembers();}));
     $$(".remove-member").forEach(b=>b.addEventListener("click",async()=>{if(!confirm("Remover este participante da Crônica?"))return;await request(`/api/chronicles/${chronicleId}/members/${b.dataset.id}`,{method:"DELETE"});await loadMembers();}));
 }
-$("#event-form").addEventListener("submit",async(event)=>{event.preventDefault();await request(`/api/chronicles/${chronicleId}/events`,{method:"POST",body:JSON.stringify({eventType:val("#event-type"),title:val("#event-title"),content:val("#event-content")})});event.currentTarget.reset();await loadEvents();toast("Evento preparado.");});
+$("#event-form").addEventListener("submit",async(event)=>{event.preventDefault();const submittedForm=event.currentTarget;await request(`/api/chronicles/${chronicleId}/events`,{method:"POST",body:JSON.stringify({eventType:val("#event-type"),title:val("#event-title"),content:val("#event-content")})});submittedForm.reset();await loadEvents();toast("Evento preparado.");});
 function renderEvents(items){$("#event-list").innerHTML=items.map(i=>`<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(i.title)}</h4><p>${escapeHtml(i.event_type)} • ${escapeHtml(i.content)}</p></div><div class="list-actions">${i.is_active?`<button class="button-danger stop-event" data-id="${i.id}">Encerrar</button>`:`<button class="button-ghost activate-event" data-id="${i.id}">Disparar</button>`}</div></div>`).join("")||`<div class="empty">Nenhum evento preparado.</div>`; $$(".activate-event").forEach(b=>b.addEventListener("click",async()=>{await request(`/api/events/${b.dataset.id}/activate`,{method:"POST"});await loadEvents();await loadLive();toast("Evento disparado.");}));$$(".stop-event").forEach(b=>b.addEventListener("click",async()=>{await request(`/api/events/${b.dataset.id}/deactivate`,{method:"POST"});await loadEvents();await loadLive();}));}
 
 // ---------- NOTAS ----------
@@ -244,24 +282,31 @@ function renderNotes(){
     $$(".reveal-note").forEach(b=>b.addEventListener("click",async()=>{await request(`/api/notes/${b.dataset.id}/reveal`,{method:"POST"});await loadNotes();toast("Nota revelada.");}));$$(".delete-note").forEach(b=>b.addEventListener("click",async()=>{if(!confirm("Excluir esta nota?"))return;await request(`/api/notes/${b.dataset.id}`,{method:"DELETE"});await loadNotes();}));
 }
 $("#note-visibility").addEventListener("change",()=>$("#note-recipient-group").hidden=val("#note-visibility")!=="selected");
-$("#note-form").addEventListener("submit",async(event)=>{event.preventDefault();const selected=$$("#note-recipients option:checked").map(o=>Number(o.value));await request(`/api/chronicles/${chronicleId}/notes`,{method:"POST",body:JSON.stringify({title:val("#note-title"),content:val("#note-content"),visibility:state.canManage?val("#note-visibility"):"master",recipientIds:selected,isRevealed:false})});event.currentTarget.reset();await loadNotes();toast(state.canManage?"Nota salva.":"Nota privada enviada ao Mestre.");});
+$("#note-form").addEventListener("submit",async(event)=>{event.preventDefault();const submittedForm=event.currentTarget;const selected=$$("#note-recipients option:checked").map(o=>Number(o.value));await request(`/api/chronicles/${chronicleId}/notes`,{method:"POST",body:JSON.stringify({title:val("#note-title"),content:val("#note-content"),visibility:state.canManage?val("#note-visibility"):"master",recipientIds:selected,isRevealed:false})});submittedForm.reset();await loadNotes();toast(state.canManage?"Nota salva.":"Nota privada enviada ao Mestre.");});
 
 // ---------- GENERIC RENDERERS / FORMS ----------
 function simpleList(selector, items, line1, line2, resource=null){$(selector).innerHTML=items.map(item=>`<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(line1(item))}</h4><p>${escapeHtml(line2(item))}</p></div>${resource&&state.canManage?`<button class="button-danger generic-delete" data-resource="${resource}" data-id="${item.id}">Excluir</button>`:''}</div>`).join("")||`<div class="empty">Nenhum registro.</div>`;if(resource&&state.canManage){$$('.generic-delete',$(selector)).forEach(b=>b.addEventListener('click',async()=>{if(!confirm('Excluir este registro?'))return;await request(`/api/${b.dataset.resource}/${b.dataset.id}`,{method:'DELETE'});await reloadResource(resource);}));}}
 async function reloadResource(resource){const map={npcs:loadNpcs,diary:loadDiary,story:loadStory,timeline:loadTimeline,media:loadMedia,cutscenes:loadCutscenes,events:loadEvents,maps:loadMaps,clocks:loadClocks};if(map[resource])await map[resource]();}
-$("#diary-form").addEventListener("submit",async(e)=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/diary`,{method:"POST",body:JSON.stringify({entryType:val("#diary-type"),title:val("#diary-title"),content:val("#diary-content"),visibility:val("#diary-visibility"),occurredAt:val("#diary-date")})});e.currentTarget.reset();await loadDiary();});
-$("#npc-form").addEventListener("submit",async(e)=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/npcs`,{method:"POST",body:JSON.stringify({name:val("#npc-name"),type:val("#npc-type"),importance:val("#npc-importance"),defense:numberVal("#npc-defense"),health:numberVal("#npc-health",3),damage:numberVal("#npc-damage",1),description:val("#npc-description")})});e.currentTarget.reset();await loadNpcs();});
-$("#media-form").addEventListener("submit",async(e)=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/media`,{method:"POST",body:JSON.stringify({title:val("#media-title"),category:val("#media-category"),url:val("#media-url"),mediaType:"youtube"})});e.currentTarget.reset();await loadMedia();});
+$("#diary-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;await request(`/api/chronicles/${chronicleId}/diary`,{method:"POST",body:JSON.stringify({entryType:val("#diary-type"),title:val("#diary-title"),content:val("#diary-content"),visibility:val("#diary-visibility"),occurredAt:val("#diary-date")})});submittedForm.reset();await loadDiary();});
+$("#npc-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;await request(`/api/chronicles/${chronicleId}/npcs`,{method:"POST",body:JSON.stringify({name:val("#npc-name"),type:val("#npc-type"),importance:val("#npc-importance"),defense:numberVal("#npc-defense"),health:numberVal("#npc-health",3),damage:numberVal("#npc-damage",1),description:val("#npc-description")})});submittedForm.reset();await loadNpcs();});
+$("#media-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;await request(`/api/chronicles/${chronicleId}/media`,{method:"POST",body:JSON.stringify({title:val("#media-title"),category:val("#media-category"),url:val("#media-url"),mediaType:"youtube"})});submittedForm.reset();await loadMedia();});
+$("#room-media-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;await request(`/api/chronicles/${chronicleId}/media`,{method:"POST",body:JSON.stringify({title:val("#room-media-title"),category:val("#room-media-category"),url:val("#room-media-url"),mediaType:"youtube"})});submittedForm.reset();$("#room-audio-creator").open=false;await loadMedia();toast("Mídia adicionada à biblioteca.");});
 $("#youtube-search-form").addEventListener("submit",(e)=>{e.preventDefault();const q=val("#youtube-query").trim();if(q)window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,"_blank","noopener");});
-function parseCutsceneSteps(raw){return raw.split("\n").map(s=>s.trim()).filter(Boolean).map(line=>line.startsWith("image:")?{type:"image",content:line.slice(6).trim()}:line.startsWith("video:")?{type:"video",content:line.slice(6).trim()}:{type:"text",content:line});}
-$("#cutscene-form").addEventListener("submit",async(e)=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/cutscenes`,{method:"POST",body:JSON.stringify({title:val("#cutscene-title"),steps:parseCutsceneSteps(val("#cutscene-steps"))})});e.currentTarget.reset();await loadCutscenes();});
-$("#story-form").addEventListener("submit",async(e)=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/story`,{method:"POST",body:JSON.stringify({nodeType:val("#story-type"),title:val("#story-title"),description:val("#story-description")})});e.currentTarget.reset();await loadStory();});
-$("#timeline-form").addEventListener("submit",async(e)=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/timeline`,{method:"POST",body:JSON.stringify({title:val("#timeline-title"),eventDate:val("#timeline-date"),visibility:val("#timeline-visibility"),content:val("#timeline-content")})});e.currentTarget.reset();await loadTimeline();});
-$("#map-form").addEventListener("submit",async(e)=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/maps`,{method:"POST",body:JSON.stringify({title:val("#map-title"),mapType:val("#map-type"),imageUrl:val("#map-url"),gridEnabled:$("#map-grid").checked})});e.currentTarget.reset();await loadMaps();});
-$("#clock-form").addEventListener("submit",async(e)=>{e.preventDefault();await request(`/api/chronicles/${chronicleId}/clocks`,{method:"POST",body:JSON.stringify({title:val("#clock-title"),segments:numberVal("#clock-segments",4),consequence:val("#clock-consequence")})});e.currentTarget.reset();await loadClocks();});
+$("#room-youtube-search-form").addEventListener("submit",e=>{e.preventDefault();const q=val("#room-youtube-query").trim();if(q)window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`,"_blank","noopener");});
+$("#cutscene-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;const file=$("#cutscene-video")?.files?.[0];if(!file)return toast("Escolha um vídeo MP4 ou WebM do seu PC.");const videoUrl=(await uploadLocalFile(file,"video")).url;await request(`/api/chronicles/${chronicleId}/cutscenes`,{method:"POST",body:JSON.stringify({title:val("#cutscene-title"),steps:[],videoUrl})});submittedForm.reset();await loadCutscenes();toast("Cutscene adicionada.");});
+$("#story-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;await request(`/api/chronicles/${chronicleId}/story`,{method:"POST",body:JSON.stringify({nodeType:val("#story-type"),title:val("#story-title"),description:val("#story-description")})});submittedForm.reset();await loadStory();});
+$("#timeline-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;await request(`/api/chronicles/${chronicleId}/timeline`,{method:"POST",body:JSON.stringify({title:val("#timeline-title"),eventDate:val("#timeline-date"),visibility:val("#timeline-visibility"),content:val("#timeline-content")})});submittedForm.reset();await loadTimeline();});
+$("#map-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;const file=$("#map-url")?.files?.[0];if(!file)return toast("Escolha a imagem do mapa no seu PC.");const imageUrl=(await uploadLocalFile(file,"image")).url;await request(`/api/chronicles/${chronicleId}/maps`,{method:"POST",body:JSON.stringify({title:val("#map-title"),mapType:val("#map-type"),imageUrl,gridEnabled:$("#map-grid").checked})});submittedForm.reset();await loadMaps();});
+$("#clock-form").addEventListener("submit",async(e)=>{e.preventDefault();const submittedForm=e.currentTarget;await request(`/api/chronicles/${chronicleId}/clocks`,{method:"POST",body:JSON.stringify({title:val("#clock-title"),segments:numberVal("#clock-segments",4),consequence:val("#clock-consequence")})});submittedForm.reset();await loadClocks();});
 
-function renderMedia(items){$("#media-list").innerHTML=items.map(i=>`<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(i.title)}</h4><p>${escapeHtml(i.category)} • ${escapeHtml(i.url)}</p></div><div class="list-actions"><a class="button-ghost" target="_blank" href="${escapeHtml(i.url)}">Abrir</a>${i.is_active?`<button class="button-danger stop-media" data-id="${i.id}">Parar</button>`:`<button class="button-ghost activate-media" data-id="${i.id}">Tocar para mesa</button>`}</div></div>`).join("")||`<div class="empty">Nenhuma mídia salva.</div>`;$$('.activate-media').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/media/${b.dataset.id}/activate`,{method:'POST'});await loadMedia();await loadLive();toast('Mídia definida como ambiente atual.');}));$$('.stop-media').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/media/${b.dataset.id}/deactivate`,{method:'POST'});await loadMedia();await loadLive();toast('Mídia interrompida.');}));}
-function renderCutscenes(items){$("#cutscene-list").innerHTML=items.map(i=>`<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(i.title)}</h4><p>${i.is_active?'Em exibição para a mesa':'Preparada'}</p></div><div class="list-actions">${i.is_active?`<button class="button-danger stop-cutscene" data-id="${i.id}">Encerrar</button>`:`<button class="button-ghost activate-cutscene" data-id="${i.id}">Iniciar</button>`}</div></div>`).join("")||`<div class="empty">Nenhuma cutscene preparada.</div>`;$$('.activate-cutscene').forEach(b=>b.addEventListener('click',async()=>{state.dismissedCutsceneId=null;await request(`/api/cutscenes/${b.dataset.id}/activate`,{method:'POST'});await loadCutscenes();await loadLive();toast('Cutscene liberada para a mesa.');}));$$('.stop-cutscene').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/cutscenes/${b.dataset.id}/deactivate`,{method:'POST'});state.dismissedCutsceneId=Number(b.dataset.id);$('#cutscene-overlay').hidden=true;await loadCutscenes();await loadLive();}));}
+function renderMedia(items){
+    const html=items.map(i=>`<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(i.title)}</h4><p>${escapeHtml(i.category)} • ${escapeHtml(i.url)}</p></div><div class="list-actions"><a class="button-ghost" target="_blank" href="${escapeHtml(i.url)}">Abrir</a>${i.is_active?`<button class="button-danger stop-media" data-id="${i.id}">Parar</button>`:`<button class="button-ghost activate-media" data-id="${i.id}">Tocar</button>`}</div></div>`).join("")||`<div class="empty">Nenhuma mídia salva.</div>`;
+    const mediaList=$("#media-list");if(mediaList)mediaList.innerHTML=html;
+    const roomMediaList=$("#room-media-list");if(roomMediaList)roomMediaList.innerHTML=html;
+    $$('.activate-media').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/media/${b.dataset.id}/activate`,{method:'POST'});await loadMedia();await loadLive();toast('Mídia definida como ambiente atual.');}));
+    $$('.stop-media').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/media/${b.dataset.id}/deactivate`,{method:'POST'});await loadMedia();await loadLive();toast('Mídia interrompida.');}));
+}
+function renderCutscenes(items){$("#cutscene-list").innerHTML=items.map(i=>{const stateLabel=i.playback_state==='playing'?'Em exibição':i.playback_state==='paused'?'Pausada':'Preparada';return `<div class="list-item"><div class="list-item-main"><h4>${escapeHtml(i.title)}</h4><p>${stateLabel} • vídeo local</p></div><div class="list-actions">${i.is_active&&i.playback_state==='playing'?`<button class="button-ghost pause-cutscene" data-id="${i.id}">Pausar Cutscene</button><button class="button-danger end-cutscene" data-id="${i.id}">Encerrar</button>`:i.is_active&&i.playback_state==='paused'?`<button class="button-ghost resume-cutscene" data-id="${i.id}">Retomar</button><button class="button-danger end-cutscene" data-id="${i.id}">Encerrar</button>`:`<button class="button-ghost launch-cutscene" data-id="${i.id}">Lançar Cutscene</button>`}</div></div>`}).join("")||`<div class="empty">Nenhuma cutscene preparada.</div>`;$$('.launch-cutscene').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/cutscenes/${b.dataset.id}/launch`,{method:'POST'});await loadCutscenes();await loadLive();toast('Cutscene lançada para a mesa.');}));$$('.pause-cutscene').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/cutscenes/${b.dataset.id}/pause`,{method:'POST'});await loadCutscenes();await loadLive();toast('Cutscene pausada. A cena voltou para a mesa.');}));$$('.resume-cutscene').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/cutscenes/${b.dataset.id}/resume`,{method:'POST'});await loadCutscenes();await loadLive();}));$$('.end-cutscene').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/cutscenes/${b.dataset.id}/end`,{method:'POST'});hideCutscene();await loadCutscenes();await loadLive();}));}
 function parsedMarkers(item){try{return JSON.parse(item.markers_json||'[]')}catch{return []}}
 function renderMaps(items){state.maps=items;$("#map-list").innerHTML=items.map(i=>{const markers=parsedMarkers(i);return `<div><div class="list-item"><div class="list-item-main"><h4>${escapeHtml(i.title)}</h4><p>${escapeHtml(i.map_type)}${i.grid_enabled?' • grid ativo':''}${state.canManage?' • clique no mapa para marcar':''}</p></div></div>${i.image_url?`<div class="map-preview ${i.grid_enabled?'grid-on':''}" data-map-id="${i.id}" style="background-image:url('${escapeHtml(i.image_url)}')">${markers.map((m,index)=>`<button type="button" class="map-marker" data-map-id="${i.id}" data-index="${index}" data-label="${escapeHtml(m.label||'Marcador')}" style="left:${Number(m.x)||0}%;top:${Number(m.y)||0}%" aria-label="${escapeHtml(m.label||'Marcador')}"></button>`).join('')}</div>`:''}</div>`}).join("")||`<div class="empty">Nenhum mapa registrado.</div>`;
     if(state.canManage){$$('.map-preview').forEach(preview=>preview.addEventListener('click',async event=>{if(event.target.classList.contains('map-marker'))return;const rect=preview.getBoundingClientRect();const x=((event.clientX-rect.left)/rect.width)*100;const y=((event.clientY-rect.top)/rect.height)*100;const label=prompt('Nome do marcador:');if(!label)return;const map=state.maps.find(m=>m.id===Number(preview.dataset.mapId));const markers=parsedMarkers(map);markers.push({label,x:Number(x.toFixed(2)),y:Number(y.toFixed(2)),type:'location'});await request(`/api/maps/${map.id}`,{method:'PATCH',body:JSON.stringify({markers})});await loadMaps();}));$$('.map-marker').forEach(marker=>marker.addEventListener('click',async event=>{event.stopPropagation();if(!confirm(`Remover o marcador "${marker.dataset.label}"?`))return;const map=state.maps.find(m=>m.id===Number(marker.dataset.mapId));const markers=parsedMarkers(map);markers.splice(Number(marker.dataset.index),1);await request(`/api/maps/${map.id}`,{method:'PATCH',body:JSON.stringify({markers})});await loadMaps();}));}
@@ -269,13 +314,28 @@ function renderMaps(items){state.maps=items;$("#map-list").innerHTML=items.map(i
 function renderClocks(items){$("#clock-list").innerHTML=items.map(i=>`<div class="clock"><div class="card-header"><div><h4>${escapeHtml(i.title)}</h4><p>${escapeHtml(i.consequence)}</p></div><span class="tag">${i.progress}/${i.segments}</span></div><div class="clock-segments">${Array.from({length:i.segments},(_,x)=>`<span class="clock-segment ${x<i.progress?'filled':''}"></span>`).join('')}</div>${state.canManage?`<div class="list-actions"><button class="button-ghost clock-change" data-id="${i.id}" data-progress="${Math.max(0,i.progress-1)}">−</button><button class="button-ghost clock-change" data-id="${i.id}" data-progress="${Math.min(i.segments,i.progress+1)}">+</button></div>`:''}</div>`).join("")||`<div class="empty">Nenhum relógio ativo.</div>`;$$('.clock-change').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/clocks/${b.dataset.id}`,{method:'PATCH',body:JSON.stringify({progress:Number(b.dataset.progress)})});await loadClocks();}));}
 
 // ---------- CONFLITOS ----------
-$("#conflict-form").addEventListener("submit",async e=>{e.preventDefault();const participants=val("#conflict-participants").split("\n").map(x=>x.trim()).filter(Boolean);await request(`/api/chronicles/${chronicleId}/conflicts`,{method:"POST",body:JSON.stringify({title:val("#conflict-title"),mode:val("#conflict-mode"),participants,notes:val("#conflict-notes")})});e.currentTarget.reset();await loadConflicts();});
-function renderConflicts(items){$("#conflict-list").innerHTML=items.map(i=>`<div class="card"><div class="card-header"><div><h3>${escapeHtml(i.title)}</h3><p>${escapeHtml(i.mode)} • Rodada ${i.round} • ${escapeHtml(i.status)}</p></div>${i.status==='active'?'<span class="tag wine">Ativo</span>':'<span class="tag">Encerrado</span>'}</div><div class="list">${(i.participants||[]).map((p,x)=>`<div class="list-item"><span>${x+1}. ${escapeHtml(p)}</span></div>`).join('')}</div>${i.notes?`<p style="margin-top:.6rem">${escapeHtml(i.notes)}</p>`:''}${state.canManage&&i.status==='active'?`<div class="list-actions" style="margin-top:.7rem"><button class="button-ghost next-round" data-id="${i.id}" data-round="${i.round+1}">Próxima rodada</button><button class="button-danger finish-conflict" data-id="${i.id}" data-round="${i.round}">Encerrar</button></div>`:''}</div>`).join('')||`<div class="empty">Nenhum conflito registrado.</div>`;$$('.next-round').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/conflicts/${b.dataset.id}`,{method:'PATCH',body:JSON.stringify({round:Number(b.dataset.round)})});await loadConflicts();}));$$('.finish-conflict').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/conflicts/${b.dataset.id}`,{method:'PATCH',body:JSON.stringify({round:Number(b.dataset.round),status:'finished'})});await loadConflicts();}));}
+$("#conflict-form").addEventListener("submit",async e=>{e.preventDefault();const submittedForm=e.currentTarget;const participants=val("#conflict-participants").split("\n").map(x=>x.trim()).filter(Boolean);await request(`/api/chronicles/${chronicleId}/conflicts`,{method:"POST",body:JSON.stringify({title:val("#conflict-title"),mode:val("#conflict-mode"),participants,notes:val("#conflict-notes")})});submittedForm.reset();await loadConflicts();});
+function renderConflicts(items){$("#conflict-list").innerHTML=items.map(i=>`<div class="card"><div class="card-header"><div><h3>${escapeHtml(i.title)}</h3><p>${escapeHtml(i.mode)} • Rodada ${i.round} • ${escapeHtml(i.status)}</p></div>${i.status==='active'?'<span class="tag wine">Ativo</span>':'<span class="tag">Encerrado</span>'}</div><div class="list">${(i.participants||[]).map((p,x)=>{const name=typeof p==="string"?p:(p?.name||"Participante");const initiative=typeof p==="object"&&p?.initiative!=null?` · Iniciativa ${p.initiative}`:"";return `<div class="list-item"><span>${x+1}. ${escapeHtml(name)}${initiative}</span></div>`;}).join('')}</div>${i.notes?`<p style="margin-top:.6rem">${escapeHtml(i.notes)}</p>`:''}${state.canManage&&i.status==='active'?`<div class="list-actions" style="margin-top:.7rem"><button class="button-ghost next-round" data-id="${i.id}" data-round="${i.round+1}">Próxima rodada</button><button class="button-danger finish-conflict" data-id="${i.id}" data-round="${i.round}">Encerrar</button></div>`:''}</div>`).join('')||`<div class="empty">Nenhum conflito registrado.</div>`;$$('.next-round').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/conflicts/${b.dataset.id}`,{method:'PATCH',body:JSON.stringify({round:Number(b.dataset.round)})});await loadConflicts();}));$$('.finish-conflict').forEach(b=>b.addEventListener('click',async()=>{await request(`/api/conflicts/${b.dataset.id}`,{method:'PATCH',body:JSON.stringify({round:Number(b.dataset.round),status:'finished'})});await loadConflicts();}));}
 
 // ---------- CHAT ----------
 $("#chat-channel").addEventListener("change",()=>$("#whisper-group").hidden=val("#chat-channel")!=="whisper");
 $("#chat-form").addEventListener("submit",async(e)=>{e.preventDefault();const content=val("#chat-content").trim();if(!content)return;await request(`/api/chronicles/${chronicleId}/messages`,{method:"POST",body:JSON.stringify({channel:val("#chat-channel"),recipientId:val("#chat-channel")==="whisper"?Number(val("#chat-recipient")):null,content})});$("#chat-content").value="";await loadMessages();});
-async function loadMessages(){try{const data=await apiRequest(`/api/chronicles/${chronicleId}/messages?after=${state.lastMessageId}`);if(!data.messages.length)return;const box=$("#chat-box");for(const m of data.messages){const article=document.createElement("article");article.className=`message ${m.channel}`;article.innerHTML=`<header><strong>${escapeHtml(m.sender_name)}${m.recipient_name?` → ${escapeHtml(m.recipient_name)}`:""}</strong><span>${fmtDate(m.created_at)}</span></header><p>${escapeHtml(m.content)}</p>`;box.append(article);state.lastMessageId=Math.max(state.lastMessageId,m.id);}box.scrollTop=box.scrollHeight;}catch(error){handleAuth(error);}}
+function buildMessageElement(m){const article=document.createElement("article");article.className=`message ${m.channel}`;article.innerHTML=`<header><strong>${escapeHtml(m.sender_name)}${m.recipient_name?` → ${escapeHtml(m.recipient_name)}`:""}</strong><span>${fmtDate(m.created_at)}</span></header><p>${escapeHtml(m.content)}</p>`;return article;}
+async function loadMessages(){try{const data=await apiRequest(`/api/chronicles/${chronicleId}/messages?after=${state.lastMessageId}`);if(!data.messages.length)return;const boxes=[$("#chat-box"),$("#room-chat-box")].filter(Boolean);for(const m of data.messages){for(const box of boxes)box.append(buildMessageElement(m));state.lastMessageId=Math.max(state.lastMessageId,m.id);}for(const box of boxes)box.scrollTop=box.scrollHeight;}catch(error){handleAuth(error);}}
+
+// ---------- CONTROLES DA SALA VTT ----------
+function openRoomPane(name){
+    $$("[data-room-pane]").forEach(el=>el.classList.toggle("active",el.dataset.roomPane===name));
+    $$("[data-room-pane-content]").forEach(el=>el.classList.toggle("active",el.dataset.roomPaneContent===name));
+}
+$$("[data-room-pane]").forEach(el=>el.addEventListener("click",()=>openRoomPane(el.dataset.roomPane)));
+$$("[data-room-open-tab]").forEach(el=>el.addEventListener("click",()=>activateTab(el.dataset.roomOpenTab)));
+$("#room-exit").addEventListener("click",()=>activateTab("overview"));
+$("#room-new-scene").addEventListener("click",()=>{openRoomPane("scenes");$("#room-scene-creator").open=true;$("#room-new-scene-title").focus();});
+$("#room-new-audio").addEventListener("click",()=>{openRoomPane("audio");$("#room-audio-creator").open=true;$("#room-media-title").focus();});
+$("#room-chat-channel").addEventListener("change",()=>{$("#room-chat-recipient").hidden=val("#room-chat-channel")!=="whisper";});
+$("#room-player-toggle").addEventListener("click",()=>{const player=$("#live-media-player");if(!player.innerHTML)return toast("Nenhuma mídia ativa.");player.hidden=!player.hidden;});
+$("#room-chat-form").addEventListener("submit",async(e)=>{e.preventDefault();const content=val("#room-chat-content").trim();if(!content)return;await request(`/api/chronicles/${chronicleId}/messages`,{method:"POST",body:JSON.stringify({channel:val("#room-chat-channel"),recipientId:val("#room-chat-channel")==="whisper"?Number(val("#room-chat-recipient")):null,content})});$("#room-chat-content").value="";await loadMessages();});
 
 // ---------- LOADERS ----------
 async function loadChronicle(){const [me,c]=await Promise.all([request('/api/me'),request(`/api/chronicles/${chronicleId}`)]);state.me=me.user;state.chronicle=c.chronicle;state.role=c.chronicle.role;state.canManage=c.canManage;masterOnlyVisibility();renderChronicle();}
@@ -284,7 +344,7 @@ async function loadCharacters(){const d=await request(`/api/chronicles/${chronic
 async function loadRolls(){const d=await request(`/api/chronicles/${chronicleId}/rolls`);renderRollHistory(d.rolls);}
 async function loadRollRequests(){const d=await request(`/api/chronicles/${chronicleId}/roll-requests`);state.rollRequests=d.requests;renderRollRequests();}
 async function loadConflicts(){const d=await request(`/api/chronicles/${chronicleId}/conflicts`);state.conflicts=d.conflicts;renderConflicts(d.conflicts);}
-async function loadScenes(){const d=await request(`/api/chronicles/${chronicleId}/scenes`);state.scenes=d.scenes;if(state.canManage)renderScenes();}
+async function loadScenes(){const d=await request(`/api/chronicles/${chronicleId}/scenes`);state.scenes=d.scenes;renderScenes();}
 async function loadNotes(){const d=await request(`/api/chronicles/${chronicleId}/notes`);state.notes=d.notes;renderNotes();}
 async function genericLoad(resource){const d=await request(`/api/chronicles/${chronicleId}/${resource}`);return d.items;}
 async function loadDiary(){simpleList('#diary-list',await genericLoad('diary'),i=>i.title,i=>`${i.entry_type} • ${i.occurred_at||fmtDate(i.created_at)} — ${i.content}`,'diary');}

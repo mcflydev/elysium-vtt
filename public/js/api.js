@@ -38,3 +38,20 @@ export async function apiRequest(path, options = {}) {
 
     return data;
 }
+
+export async function uploadLocalFile(file, kind = "image") {
+    if (!(file instanceof File) || !file.size) return "";
+    const response = await fetch("/api/upload", {
+        method: "POST",
+        credentials: "same-origin",
+        body: file,
+        headers: {
+            "Content-Type": file.type,
+            "X-Upload-Kind": kind,
+            "X-File-Name": encodeURIComponent(file.name)
+        }
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) throw new ApiError(data?.message ?? "Falha no upload do arquivo.", response.status, data);
+    return data.url;
+}

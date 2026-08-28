@@ -238,6 +238,10 @@ CREATE TABLE IF NOT EXISTS cutscenes (
     chronicle_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     steps_json TEXT NOT NULL DEFAULT '[]',
+    video_url TEXT NOT NULL DEFAULT '',
+    playback_state TEXT NOT NULL DEFAULT 'stopped',
+    playback_position REAL NOT NULL DEFAULT 0,
+    playback_started_at TEXT NOT NULL DEFAULT '',
     is_active INTEGER NOT NULL DEFAULT 0 CHECK(is_active IN (0,1)),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE
@@ -346,3 +350,284 @@ CREATE TABLE IF NOT EXISTS presence (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS idx_presence_last_seen ON presence(last_seen);
+
+-- =========================================================
+-- ELYSIUM VTT CORE (v0.8)
+-- =========================================================
+
+CREATE TABLE IF NOT EXISTS scene_folders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_tokens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    character_id INTEGER,
+    npc_id INTEGER,
+    owner_user_id INTEGER,
+    name TEXT NOT NULL DEFAULT 'Token',
+    image_url TEXT NOT NULL DEFAULT '',
+    x REAL NOT NULL DEFAULT 200,
+    y REAL NOT NULL DEFAULT 200,
+    width REAL NOT NULL DEFAULT 70,
+    height REAL NOT NULL DEFAULT 70,
+    rotation REAL NOT NULL DEFAULT 0,
+    elevation REAL NOT NULL DEFAULT 0,
+    hidden INTEGER NOT NULL DEFAULT 0 CHECK(hidden IN (0,1)),
+    locked INTEGER NOT NULL DEFAULT 0 CHECK(locked IN (0,1)),
+    vision_enabled INTEGER NOT NULL DEFAULT 1 CHECK(vision_enabled IN (0,1)),
+    vision_range REAL NOT NULL DEFAULT 420,
+    disposition TEXT NOT NULL DEFAULT 'neutral' CHECK(disposition IN ('friendly','neutral','hostile','secret')),
+    bar1_value INTEGER NOT NULL DEFAULT 0,
+    bar1_max INTEGER NOT NULL DEFAULT 0,
+    bar2_value INTEGER NOT NULL DEFAULT 0,
+    bar2_max INTEGER NOT NULL DEFAULT 0,
+    status_json TEXT NOT NULL DEFAULT '[]',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE,
+    FOREIGN KEY (character_id) REFERENCES characters(id) ON DELETE SET NULL,
+    FOREIGN KEY (npc_id) REFERENCES npcs(id) ON DELETE SET NULL,
+    FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS vtt_walls (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    x1 REAL NOT NULL,
+    y1 REAL NOT NULL,
+    x2 REAL NOT NULL,
+    y2 REAL NOT NULL,
+    wall_type TEXT NOT NULL DEFAULT 'wall' CHECK(wall_type IN ('wall','door','secret')),
+    door_state TEXT NOT NULL DEFAULT 'closed' CHECK(door_state IN ('open','closed','locked')),
+    blocks_vision INTEGER NOT NULL DEFAULT 1 CHECK(blocks_vision IN (0,1)),
+    blocks_movement INTEGER NOT NULL DEFAULT 1 CHECK(blocks_movement IN (0,1)),
+    blocks_sound INTEGER NOT NULL DEFAULT 1 CHECK(blocks_sound IN (0,1)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_tiles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    name TEXT NOT NULL DEFAULT 'Tile',
+    image_url TEXT NOT NULL,
+    x REAL NOT NULL DEFAULT 200,
+    y REAL NOT NULL DEFAULT 200,
+    width REAL NOT NULL DEFAULT 300,
+    height REAL NOT NULL DEFAULT 300,
+    rotation REAL NOT NULL DEFAULT 0,
+    layer TEXT NOT NULL DEFAULT 'under' CHECK(layer IN ('under','over','gm')),
+    opacity REAL NOT NULL DEFAULT 1,
+    hidden INTEGER NOT NULL DEFAULT 0 CHECK(hidden IN (0,1)),
+    locked INTEGER NOT NULL DEFAULT 0 CHECK(locked IN (0,1)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_drawings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    drawing_type TEXT NOT NULL DEFAULT 'freehand' CHECK(drawing_type IN ('freehand','rect','ellipse','text')),
+    x REAL NOT NULL DEFAULT 0,
+    y REAL NOT NULL DEFAULT 0,
+    width REAL NOT NULL DEFAULT 0,
+    height REAL NOT NULL DEFAULT 0,
+    points_json TEXT NOT NULL DEFAULT '[]',
+    text TEXT NOT NULL DEFAULT '',
+    stroke TEXT NOT NULL DEFAULT '#b23750',
+    fill TEXT NOT NULL DEFAULT 'transparent',
+    stroke_width REAL NOT NULL DEFAULT 3,
+    hidden INTEGER NOT NULL DEFAULT 0 CHECK(hidden IN (0,1)),
+    author_user_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_lights (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    name TEXT NOT NULL DEFAULT 'Luz',
+    x REAL NOT NULL,
+    y REAL NOT NULL,
+    bright_radius REAL NOT NULL DEFAULT 140,
+    dim_radius REAL NOT NULL DEFAULT 280,
+    angle REAL NOT NULL DEFAULT 360,
+    color TEXT NOT NULL DEFAULT '#f6d59a',
+    intensity REAL NOT NULL DEFAULT 1,
+    hidden INTEGER NOT NULL DEFAULT 0 CHECK(hidden IN (0,1)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_sounds (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    name TEXT NOT NULL DEFAULT 'Som ambiente',
+    media_item_id INTEGER,
+    url TEXT NOT NULL DEFAULT '',
+    x REAL NOT NULL,
+    y REAL NOT NULL,
+    radius REAL NOT NULL DEFAULT 420,
+    volume REAL NOT NULL DEFAULT 0.7,
+    hidden INTEGER NOT NULL DEFAULT 0 CHECK(hidden IN (0,1)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE,
+    FOREIGN KEY (media_item_id) REFERENCES media_items(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS vtt_map_notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    diary_entry_id INTEGER,
+    title TEXT NOT NULL DEFAULT 'Nota',
+    content TEXT NOT NULL DEFAULT '',
+    x REAL NOT NULL,
+    y REAL NOT NULL,
+    icon TEXT NOT NULL DEFAULT '◆',
+    visibility TEXT NOT NULL DEFAULT 'all' CHECK(visibility IN ('all','master')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE,
+    FOREIGN KEY (diary_entry_id) REFERENCES diary_entries(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS vtt_regions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    name TEXT NOT NULL DEFAULT 'Região',
+    x REAL NOT NULL,
+    y REAL NOT NULL,
+    width REAL NOT NULL DEFAULT 240,
+    height REAL NOT NULL DEFAULT 180,
+    shape TEXT NOT NULL DEFAULT 'rect' CHECK(shape IN ('rect','ellipse')),
+    color TEXT NOT NULL DEFAULT '#7d1a2a',
+    behavior_json TEXT NOT NULL DEFAULT '{}',
+    hidden INTEGER NOT NULL DEFAULT 0 CHECK(hidden IN (0,1)),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_fog (
+    scene_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL DEFAULT 0,
+    revealed_json TEXT NOT NULL DEFAULT '[]',
+    explored_json TEXT NOT NULL DEFAULT '[]',
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (scene_id, user_id),
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    item_type TEXT NOT NULL DEFAULT 'item',
+    description TEXT NOT NULL DEFAULT '',
+    image_url TEXT NOT NULL DEFAULT '',
+    data_json TEXT NOT NULL DEFAULT '{}',
+    folder TEXT NOT NULL DEFAULT '',
+    visibility TEXT NOT NULL DEFAULT 'all' CHECK(visibility IN ('all','master')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_roll_tables (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    formula TEXT NOT NULL DEFAULT '1d10',
+    entries_json TEXT NOT NULL DEFAULT '[]',
+    folder TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_card_decks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    cards_json TEXT NOT NULL DEFAULT '[]',
+    discard_json TEXT NOT NULL DEFAULT '[]',
+    folder TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_macros (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    command TEXT NOT NULL DEFAULT '',
+    icon TEXT NOT NULL DEFAULT '◆',
+    slot INTEGER,
+    visibility TEXT NOT NULL DEFAULT 'private' CHECK(visibility IN ('private','all')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_pings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chronicle_id INTEGER NOT NULL,
+    scene_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    x REAL NOT NULL,
+    y REAL NOT NULL,
+    ping_type TEXT NOT NULL DEFAULT 'ping' CHECK(ping_type IN ('ping','focus','fx')),
+    label TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (scene_id) REFERENCES scenes(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vtt_world_state (
+    chronicle_id INTEGER PRIMARY KEY,
+    paused INTEGER NOT NULL DEFAULT 0 CHECK(paused IN (0,1)),
+    paused_by_user_id INTEGER,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chronicle_id) REFERENCES chronicles(id) ON DELETE CASCADE,
+    FOREIGN KEY (paused_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_vtt_tokens_scene ON vtt_tokens(scene_id);
+CREATE INDEX IF NOT EXISTS idx_vtt_walls_scene ON vtt_walls(scene_id);
+CREATE INDEX IF NOT EXISTS idx_vtt_tiles_scene ON vtt_tiles(scene_id);
+CREATE INDEX IF NOT EXISTS idx_vtt_drawings_scene ON vtt_drawings(scene_id);
+CREATE INDEX IF NOT EXISTS idx_vtt_lights_scene ON vtt_lights(scene_id);
+CREATE INDEX IF NOT EXISTS idx_vtt_sounds_scene ON vtt_sounds(scene_id);
+CREATE INDEX IF NOT EXISTS idx_vtt_notes_scene ON vtt_map_notes(scene_id);
+CREATE INDEX IF NOT EXISTS idx_vtt_regions_scene ON vtt_regions(scene_id);
+CREATE INDEX IF NOT EXISTS idx_vtt_pings_scene ON vtt_pings(scene_id, id DESC);

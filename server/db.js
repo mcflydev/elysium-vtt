@@ -83,3 +83,33 @@ if (adminCount === 0) {
         db.prepare("UPDATE users SET is_admin = 1 WHERE id = ?").run(firstUser.id);
     }
 }
+
+// Campos adicionais do VTT em cenas/rolagens/presença. addColumn mantém bancos antigos compatíveis.
+addColumn("scenes", "folder_id INTEGER");
+addColumn("scenes", "position INTEGER NOT NULL DEFAULT 0");
+addColumn("scenes", "nav_visible INTEGER NOT NULL DEFAULT 1 CHECK(nav_visible IN (0,1))");
+addColumn("scenes", "gm_only INTEGER NOT NULL DEFAULT 0 CHECK(gm_only IN (0,1))");
+addColumn("scenes", "width INTEGER NOT NULL DEFAULT 1920");
+addColumn("scenes", "height INTEGER NOT NULL DEFAULT 1080");
+addColumn("scenes", "grid_type TEXT NOT NULL DEFAULT 'square'");
+addColumn("scenes", "grid_size INTEGER NOT NULL DEFAULT 70");
+addColumn("scenes", "grid_units TEXT NOT NULL DEFAULT 'm'");
+addColumn("scenes", "grid_distance REAL NOT NULL DEFAULT 1.5");
+addColumn("scenes", "background_color TEXT NOT NULL DEFAULT '#09090b'");
+addColumn("scenes", "foreground_url TEXT NOT NULL DEFAULT ''");
+addColumn("scenes", "darkness REAL NOT NULL DEFAULT 0.45");
+addColumn("scenes", "global_illumination INTEGER NOT NULL DEFAULT 1 CHECK(global_illumination IN (0,1))");
+addColumn("scenes", "fog_enabled INTEGER NOT NULL DEFAULT 0 CHECK(fog_enabled IN (0,1))");
+addColumn("scenes", "explorer_enabled INTEGER NOT NULL DEFAULT 0 CHECK(explorer_enabled IN (0,1))");
+addColumn("scenes", "restrict_movement INTEGER NOT NULL DEFAULT 1 CHECK(restrict_movement IN (0,1))");
+addColumn("scenes", "weather_effect TEXT NOT NULL DEFAULT ''");
+addColumn("rolls", "is_secret INTEGER NOT NULL DEFAULT 0 CHECK(is_secret IN (0,1))");
+addColumn("presence", "scene_id INTEGER");
+addColumn("presence", "cursor_x REAL");
+addColumn("presence", "cursor_y REAL");
+
+addColumn("cutscenes", "video_url TEXT NOT NULL DEFAULT ''");
+addColumn("cutscenes", "playback_state TEXT NOT NULL DEFAULT 'stopped'");
+addColumn("cutscenes", "playback_position REAL NOT NULL DEFAULT 0");
+addColumn("cutscenes", "playback_started_at TEXT NOT NULL DEFAULT ''");
+addColumn("vtt_drawings", "author_user_id INTEGER");

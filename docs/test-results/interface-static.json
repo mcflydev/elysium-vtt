@@ -1,0 +1,236 @@
+{
+  "passed": 46,
+  "total": 46,
+  "results": [
+    {
+      "name": "Nenhum input type=url permanece nas páginas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Nenhum campo de imagem pede URL",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Banner de Crônica usa arquivo local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Edição do banner usa arquivo local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Avatar usa arquivo local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cena do Diretor usa arquivo local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cena da Sala legada usa arquivo local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mapa usa arquivo local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cutscene legada usa MP4/WebM local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "VTT possui seção Cutscenes",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "VTT possui botão de tutorial",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Tutorial contém 8 etapas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Tutorial explica Lápis e Borracha",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Tutorial explica Cutscenes",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Tutorial explica d10 em destaque",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Barra de ferramentas oferece Lápis",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Barra de ferramentas oferece Borracha",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Atalho D aciona Lápis",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Atalho E aciona Borracha",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Borracha de jogador respeita autoria",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mestre possui Limpar marcações",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Limpeza preserva mapa/tokens/tiles na mensagem",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Servidor possui limpeza transacional",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "D10 usa polígono de dez faces",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Resultado possui cartão visual dominante",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Overlay de dados escurece a mesa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cutscene possui overlay próprio",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cutscene possui Pausar Cutscene",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cutscene possui Encerrar",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cutscene possui fallback de autoplay",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cutscene encerra ao fim natural no navegador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cutscene sincroniza posição",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Pausa de Cutscene oculta overlay e devolve mapa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Upload usa endpoint binário local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Servidor aceita imagem/vídeo/áudio local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Servidor limita tamanho de uploads",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Select do VTT remove aparência nativa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Checkbox do VTT remove aparência nativa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "File input do VTT possui file-selector-button customizado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Select das telas legadas remove aparência nativa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Checkbox das telas legadas é customizado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "File input das telas legadas é customizado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Borracha usa cursor de edição e não proibido",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ping recém-criado usa ID retornado pelo servidor",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Modo Transmissão entende vídeo local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Modo Transmissão respeita pausa da Cutscene",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

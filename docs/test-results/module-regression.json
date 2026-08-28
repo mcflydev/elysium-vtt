@@ -1,0 +1,146 @@
+{
+  "passed": 28,
+  "total": 28,
+  "results": [
+    {
+      "name": "XP do personagem é administrável pelo Mestre",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Solicitação de teste chega ao jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Solicitação é concluída após a rolagem",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Nota preparada fica oculta até revelação",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Revelar Nota entrega informação ao jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Nota privada do jogador chega ao Mestre",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Chat geral sincroniza mensagens",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Sussurro não vaza para outro jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "NPC Engine cria e compartilha NPC",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Diário público aparece ao jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Diário do Mestre permanece secreto",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Estrutura de Atos/Episódios funciona",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Timeline pública funciona",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Áudio local pode virar mídia ativa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Evento narrativo é disparado para a mesa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mapa local aceita marcadores",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Relógio narrativo avança e sincroniza",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Conflito avança rodadas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Pastas de cenas aparecem no VTT",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Item/handout com imagem local aparece ao jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Rollable Table retorna resultado válido",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador pode comprar carta do baralho",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mestre pode resetar e embaralhar baralho",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Macro privada entra na hotbar do jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Macro privada não aparece a outro jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador abre porta não trancada",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Borracha do Mestre remove luz",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Borracha do Mestre remove som posicional",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

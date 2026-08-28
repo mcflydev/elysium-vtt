@@ -1,10 +1,11 @@
 import { createServer } from "node:http";
-import { readFile, stat } from "node:fs/promises";
+import { readFile, stat, mkdir, writeFile } from "node:fs/promises";
 import { networkInterfaces } from "node:os";
 import { extname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 import { randomBytes } from "node:crypto";
+import { handleVttApi } from "./vtt-routes.js";
 
 import { db, cleanupExpiredSessions, databaseFilePath } from "./db.js";
 import {
@@ -20,9 +21,14 @@ import {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const publicDir = resolve(__dirname, "../public");
+const uploadsDir = resolve(publicDir, "uploads");
+await mkdir(uploadsDir, { recursive: true });
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
 const MAX_BODY_SIZE = 1024 * 1024;
+const MAX_UPLOAD_IMAGE = 15 * 1024 * 1024;
+const MAX_UPLOAD_AUDIO = 50 * 1024 * 1024;
+const MAX_UPLOAD_VIDEO = 200 * 1024 * 1024;
 
 const contentTypes = {
     ".html": "text/html; charset=utf-8",
@@ -34,7 +40,14 @@ const contentTypes = {
     ".jpeg": "image/jpeg",
     ".svg": "image/svg+xml",
     ".ico": "image/x-icon",
-    ".webp": "image/webp"
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+    ".mp4": "video/mp4",
+    ".webm": "video/webm",
+    ".mp3": "audio/mpeg",
+    ".ogg": "audio/ogg",
+    ".wav": "audio/wav",
+    ".m4a": "audio/mp4"
 };
 
 const MASTER_ROLES = new Set(["owner", "master", "co-master"]);
@@ -59,6 +72,36 @@ function sendJson(response, statusCode, data, headers = {}) {
         ...headers
     });
     response.end(JSON.stringify(data));
+}
+
+async function readBinaryBody(request, maxSize) {
+    return await new Promise((resolveBody, rejectBody) => {
+        const chunks = [];
+        let size = 0;
+        request.on("data", (chunk) => {
+            size += chunk.length;
+            if (size > maxSize) {
+                rejectBody(new Error("BODY_TOO_LARGE"));
+                request.destroy();
+                return;
+            }
+            chunks.push(chunk);
+        });
+        request.on("end", () => resolveBody(Buffer.concat(chunks)));
+        request.on("error", rejectBody);
+    });
+}
+
+function extensionForUpload(contentType, originalName = "") {
+    const byMime = {
+        "image/png":".png", "image/jpeg":".jpg", "image/webp":".webp", "image/gif":".gif",
+        "video/mp4":".mp4", "video/webm":".webm",
+        "audio/mpeg":".mp3", "audio/ogg":".ogg", "audio/wav":".wav", "audio/mp4":".m4a"
+    };
+    const fromMime = byMime[String(contentType || "").split(";")[0].trim().toLowerCase()];
+    if (fromMime) return fromMime;
+    const originalExt = extname(String(originalName || "")).toLowerCase();
+    return Object.keys(contentTypes).includes(originalExt) ? originalExt : "";
 }
 
 async function readJsonBody(request) {
@@ -198,6 +241,29 @@ function publicChronicle(chronicle, role) {
 
 async function handleApi(request, response, url) {
     cleanupExpiredSessions();
+
+    // ---------- UPLOADS LOCAIS ----------
+    if (request.method === "POST" && url.pathname === "/api/upload") {
+        const user = requireUser(request, response);
+        if (!user) return;
+        const kind = String(request.headers["x-upload-kind"] ?? "").toLowerCase();
+        const contentType = String(request.headers["content-type"] ?? "").split(";")[0].trim().toLowerCase();
+        const originalName = String(request.headers["x-file-name"] ?? "arquivo");
+        const rules = {
+            image: { prefix: "image/", max: MAX_UPLOAD_IMAGE },
+            video: { prefix: "video/", max: MAX_UPLOAD_VIDEO },
+            audio: { prefix: "audio/", max: MAX_UPLOAD_AUDIO }
+        };
+        const rule = rules[kind];
+        if (!rule || !contentType.startsWith(rule.prefix)) return sendJson(response, 415, { success:false, message:"Tipo de arquivo não permitido." });
+        const extension = extensionForUpload(contentType, originalName);
+        if (!extension) return sendJson(response, 415, { success:false, message:"Formato de arquivo não suportado." });
+        const body = await readBinaryBody(request, rule.max);
+        if (!body.length) return sendJson(response, 400, { success:false, message:"Selecione um arquivo válido." });
+        const fileName = `${Date.now()}-${randomBytes(8).toString("hex")}${extension}`;
+        await writeFile(resolve(uploadsDir, fileName), body, { flag:"wx" });
+        return sendJson(response, 201, { success:true, url:`/uploads/${fileName}`, fileName, size:body.length, kind });
+    }
 
     // ---------- SISTEMA / REDE ----------
     if (request.method === "GET" && url.pathname === "/api/system/network") {
@@ -432,7 +498,7 @@ async function handleApi(request, response, url) {
     // ---------- ROLAGENS ----------
     match=routeMatch(url.pathname,/^\/api\/chronicles\/(\d+)\/rolls$/);
     if(match && request.method==="GET"){
-        const user=requireUser(request,response);if(!user)return;const cid=Number(match[1]);if(!requireMember(cid,user,response))return;const rolls=db.prepare(`SELECT r.*,c.name AS character_name,u.name AS user_name FROM rolls r LEFT JOIN characters c ON c.id=r.character_id JOIN users u ON u.id=r.user_id WHERE r.chronicle_id=? ORDER BY r.id DESC LIMIT 100`).all(cid).map(r=>({...r,normalDice:safeJson(r.normal_dice_json,[]),hungerDice:safeJson(r.hunger_dice_json,[])}));return sendJson(response,200,{success:true,rolls});
+        const user=requireUser(request,response);if(!user)return;const cid=Number(match[1]);const membership=requireMember(cid,user,response);if(!membership)return;const canSeeSecret=user.isAdmin||MASTER_ROLES.has(membership.role);const secretClause=canSeeSecret?"":"AND COALESCE(r.is_secret,0)=0";const rolls=db.prepare(`SELECT r.*,c.name AS character_name,u.name AS user_name FROM rolls r LEFT JOIN characters c ON c.id=r.character_id JOIN users u ON u.id=r.user_id WHERE r.chronicle_id=? ${secretClause} ORDER BY r.id DESC LIMIT 100`).all(cid).map(r=>({...r,normalDice:safeJson(r.normal_dice_json,[]),hungerDice:safeJson(r.hunger_dice_json,[])}));return sendJson(response,200,{success:true,rolls});
     }
     if(match && request.method==="POST"){
         const user=requireUser(request,response);if(!user)return;const cid=Number(match[1]);const membership=requireMember(cid,user,response);if(!membership)return;if(membership.role==="spectator"&&!user.isAdmin)return sendJson(response,403,{success:false,message:"Espectadores não podem realizar testes."});const body=await readJsonBody(request);let character=null;if(body.characterId){character=db.prepare("SELECT * FROM characters WHERE id=? AND chronicle_id=?").get(Number(body.characterId),cid);if(!character)return sendJson(response,404,{success:false,message:"Personagem não encontrado."});if(!user.isAdmin&&!MASTER_ROLES.has(membership.role)&&character.user_id!==user.id)return sendJson(response,403,{success:false,message:"Você só pode rolar por seu personagem."});}
@@ -475,7 +541,7 @@ async function handleApi(request, response, url) {
     // ---------- CENAS ----------
     match=routeMatch(url.pathname,/^\/api\/chronicles\/(\d+)\/scenes$/);
     if(match && request.method==="GET"){
-        const user=requireUser(request,response);if(!user)return;const cid=Number(match[1]);if(!requireMember(cid,user,response))return;return sendJson(response,200,{success:true,scenes:db.prepare("SELECT * FROM scenes WHERE chronicle_id=? ORDER BY is_current DESC,id DESC").all(cid)});
+        const user=requireUser(request,response);if(!user)return;const cid=Number(match[1]);const membership=requireMember(cid,user,response);if(!membership)return;const canManage=user.isAdmin||["owner","master","co-master"].includes(membership.role);const scenes=canManage?db.prepare("SELECT * FROM scenes WHERE chronicle_id=? ORDER BY is_current DESC,id DESC").all(cid):db.prepare("SELECT * FROM scenes WHERE chronicle_id=? AND is_current=1 ORDER BY id DESC").all(cid);return sendJson(response,200,{success:true,scenes});
     }
     if(match && request.method==="POST"){
         const user=requireUser(request,response);if(!user)return;const cid=Number(match[1]);if(!requireMaster(cid,user,response))return;const body=await readJsonBody(request);const title=cleanText(body.title,150);if(!title)return sendJson(response,400,{success:false,message:"Informe o título da cena."});const result=db.prepare("INSERT INTO scenes(chronicle_id,title,description,image_url,narrative_time,weather,music_url) VALUES(?,?,?,?,?,?,?)").run(cid,title,cleanText(body.description,5000),cleanText(body.imageUrl,1000),cleanText(body.narrativeTime,100),cleanText(body.weather,100),cleanText(body.musicUrl,1000));return sendJson(response,201,{success:true,id:Number(result.lastInsertRowid)});
@@ -547,13 +613,24 @@ async function handleApi(request, response, url) {
                 case "story": result=db.prepare("INSERT INTO story_nodes(chronicle_id,parent_id,node_type,title,description,position) VALUES(?,?,?,?,?,?)").run(cid,b.parentId?Number(b.parentId):null,["season","episode","act","scene"].includes(b.nodeType)?b.nodeType:"scene",cleanText(b.title,150)||"Novo item",cleanText(b.description,5000),cleanInt(b.position,0,9999,0));break;
                 case "timeline": result=db.prepare("INSERT INTO timeline_events(chronicle_id,title,content,event_date,visibility) VALUES(?,?,?,?,?)").run(cid,cleanText(b.title,150)||"Evento",cleanText(b.content,5000),cleanText(b.eventDate,100),["master","partial","all"].includes(b.visibility)?b.visibility:"all");break;
                 case "media": result=db.prepare("INSERT INTO media_items(chronicle_id,title,category,url,media_type) VALUES(?,?,?,?,?)").run(cid,cleanText(b.title,150)||"Mídia",cleanText(b.category,80)||"Ambiente",cleanText(b.url,1500),["youtube","audio","video","image"].includes(b.mediaType)?b.mediaType:"youtube");break;
-                case "cutscenes": result=db.prepare("INSERT INTO cutscenes(chronicle_id,title,steps_json) VALUES(?,?,?)").run(cid,cleanText(b.title,150)||"Cutscene",jsonText(b.steps,[]));break;
+                case "cutscenes": result=db.prepare("INSERT INTO cutscenes(chronicle_id,title,steps_json,video_url) VALUES(?,?,?,?)").run(cid,cleanText(b.title,150)||"Cutscene",jsonText(b.steps,[]),cleanText(b.videoUrl,1500));break;
                 case "events": result=db.prepare("INSERT INTO chronicle_events(chronicle_id,event_type,title,content,payload_json) VALUES(?,?,?,?,?)").run(cid,cleanText(b.eventType,50)||"narrative",cleanText(b.title,150)||"Evento",cleanText(b.content,5000),jsonText(b.payload,{}));break;
                 case "maps": result=db.prepare("INSERT INTO maps(chronicle_id,title,map_type,image_url,grid_enabled,markers_json) VALUES(?,?,?,?,?,?)").run(cid,cleanText(b.title,150)||"Mapa",b.mapType==="tactical"?"tactical":"narrative",cleanText(b.imageUrl,1500),b.gridEnabled?1:0,jsonText(b.markers,[]));break;
                 case "clocks": result=db.prepare("INSERT INTO clocks(chronicle_id,title,segments,progress,consequence) VALUES(?,?,?,?,?)").run(cid,cleanText(b.title,150)||"Relógio",cleanInt(b.segments,2,12,4),0,cleanText(b.consequence,1000));break;
             }
             return sendJson(response,201,{success:true,id:Number(result.lastInsertRowid)});
         }
+    }
+
+    // Controle cinematográfico de Cutscenes: lançar, pausar, retomar e encerrar.
+    match=routeMatch(url.pathname,/^\/api\/cutscenes\/(\d+)\/(launch|pause|resume|end)$/);
+    if(match && request.method==="POST"){
+        const user=requireUser(request,response);if(!user)return;const item=db.prepare("SELECT * FROM cutscenes WHERE id=?").get(Number(match[1]));if(!item)return sendJson(response,404,{success:false,message:"Cutscene não encontrada."});if(!requireMaster(item.chronicle_id,user,response))return;
+        const action=match[2];
+        if(action==="launch"){db.exec("BEGIN IMMEDIATE");try{db.prepare("UPDATE cutscenes SET is_active=0,playback_state='stopped',playback_position=0,playback_started_at='' WHERE chronicle_id=?").run(item.chronicle_id);db.prepare("UPDATE cutscenes SET is_active=1,playback_state='playing',playback_position=0,playback_started_at=CURRENT_TIMESTAMP WHERE id=?").run(item.id);db.exec("COMMIT");return sendJson(response,200,{success:true,state:"playing",position:0});}catch(error){db.exec("ROLLBACK");throw error;}}
+        if(action==="pause"){db.prepare(`UPDATE cutscenes SET playback_position=playback_position+CASE WHEN playback_started_at!='' THEN MAX(0,(julianday('now')-julianday(playback_started_at))*86400.0) ELSE 0 END,playback_state='paused',playback_started_at='' WHERE id=? AND is_active=1`).run(item.id);const row=db.prepare("SELECT playback_position FROM cutscenes WHERE id=?").get(item.id);return sendJson(response,200,{success:true,state:"paused",position:Number(row?.playback_position||0)});}
+        if(action==="resume"){db.prepare("UPDATE cutscenes SET is_active=1,playback_state='playing',playback_started_at=CURRENT_TIMESTAMP WHERE id=?").run(item.id);return sendJson(response,200,{success:true,state:"playing",position:Number(item.playback_position||0)});}
+        db.prepare("UPDATE cutscenes SET is_active=0,playback_state='stopped',playback_position=0,playback_started_at='' WHERE id=?").run(item.id);return sendJson(response,200,{success:true,state:"stopped",position:0});
     }
 
     // Actions for media/cutscenes/events/clocks
@@ -593,10 +670,12 @@ async function handleApi(request, response, url) {
         const media=db.prepare("SELECT * FROM media_items WHERE chronicle_id=? AND is_active=1 ORDER BY id DESC LIMIT 1").get(cid)||null;
         const cutscene=db.prepare("SELECT * FROM cutscenes WHERE chronicle_id=? AND is_active=1 ORDER BY id DESC LIMIT 1").get(cid)||null;
         const event=db.prepare("SELECT * FROM chronicle_events WHERE chronicle_id=? AND is_active=1 ORDER BY id DESC LIMIT 1").get(cid)||null;
-        const recentRoll=db.prepare(`SELECT r.*,c.name AS character_name FROM rolls r LEFT JOIN characters c ON c.id=r.character_id WHERE r.chronicle_id=? ORDER BY r.id DESC LIMIT 1`).get(cid)||null;
-        if(cutscene)cutscene.steps=safeJson(cutscene.steps_json,[]);if(event)event.payload=safeJson(event.payload_json,{});if(recentRoll){recentRoll.normalDice=safeJson(recentRoll.normal_dice_json,[]);recentRoll.hungerDice=safeJson(recentRoll.hunger_dice_json,[]);}
+        const recentRoll=db.prepare(`SELECT r.*,c.name AS character_name FROM rolls r LEFT JOIN characters c ON c.id=r.character_id WHERE r.chronicle_id=? AND COALESCE(r.is_secret,0)=0 ORDER BY r.id DESC LIMIT 1`).get(cid)||null;
+        if(cutscene){cutscene.steps=safeJson(cutscene.steps_json,[]);cutscene.playbackPosition=Number(cutscene.playback_position||0);if(cutscene.playback_state==="playing"&&cutscene.playback_started_at){const started=new Date(cutscene.playback_started_at.replace(" ","T")+"Z").getTime();if(Number.isFinite(started))cutscene.playbackPosition+=Math.max(0,(Date.now()-started)/1000);}cutscene.playbackState=cutscene.playback_state||"stopped";}if(event)event.payload=safeJson(event.payload_json,{});if(recentRoll){recentRoll.normalDice=safeJson(recentRoll.normal_dice_json,[]);recentRoll.hungerDice=safeJson(recentRoll.hunger_dice_json,[]);}
         return sendJson(response,200,{success:true,scene,media,cutscene,event,recentRoll});
     }
+
+    if (await handleVttApi(request, response, url)) return;
 
     sendJson(response,404,{success:false,message:"Rota não encontrada."});
 }
@@ -639,5 +718,5 @@ server.listen(PORT,HOST,()=>{
     console.log("\nELYSIUM iniciado.\n");
     console.log(`Local:   http://localhost:${PORT}`);
     for(const entries of Object.values(networkInterfaces())) for(const entry of entries??[]) if(entry.family==="IPv4"&&!entry.internal) console.log(`Rede:   http://${entry.address}:${PORT}`);
-    console.log("\nNo Codespaces, abra a porta ${PORT} na aba PORTS. Em LAN/Radmin, use o IP de rede exibido acima.\n");
+    console.log(`\nNo Codespaces, abra a porta ${PORT} na aba PORTS. Em LAN/Radmin, use o IP de rede exibido acima.\n`);
 });

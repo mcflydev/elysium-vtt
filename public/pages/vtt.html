@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#09090b">
+    <title>Sala da Crônica | Elysium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/vtt.css">
+</head>
+<body class="vtt-body">
+<div class="vtt-app" id="vtt-app">
+    <header class="vtt-topbar">
+        <div class="vtt-brand-group">
+            <a class="vtt-back" id="back-to-chronicle" href="/pages/cronicas.html" title="Voltar para a Crônica">←</a>
+            <div class="vtt-brand">
+                <strong>ELYSIUM</strong>
+                <span id="chronicle-name">Sala da Crônica</span>
+            </div>
+        </div>
+
+        <nav class="scene-nav" id="scene-nav" aria-label="Navegação de cenas"></nav>
+
+        <div class="vtt-top-actions">
+            <button class="top-icon master-only" id="add-scene" type="button" title="Nova cena">＋</button>
+            <button class="top-icon master-only" id="pause-game" type="button" title="Pausar mesa">Ⅱ</button>
+            <button class="top-icon" id="open-tutorial" type="button" title="Tutorial da interface">?</button>
+            <button class="top-status" id="online-status" type="button" title="Jogadores online"><i></i><span>0 online</span></button>
+            <button class="top-icon" id="toggle-sidebar" type="button" title="Mostrar/ocultar painel">☰</button>
+        </div>
+    </header>
+
+    <main class="vtt-main">
+        <aside class="tool-rail" id="tool-rail" aria-label="Ferramentas do canvas">
+            <div class="tool-stack">
+                <button class="tool-button active" data-tool="select" title="Selecionar (V)"><span>↖</span><small>Selecionar</small></button>
+                <button class="tool-button" data-tool="pan" title="Mover câmera (H)"><span>✥</span><small>Mover</small></button>
+                <button class="tool-button" data-tool="measure" title="Medir (R)"><span>⌁</span><small>Medir</small></button>
+                <button class="tool-button" data-tool="ping" title="Ping (P)"><span>◎</span><small>Ping</small></button>
+                <button class="tool-button" data-tool="draw" title="Desenhar (D)"><span>✎</span><small>Lápis</small></button>
+                <button class="tool-button" data-tool="erase" title="Borracha (E)"><span>⌫</span><small>Borracha</small></button>
+            </div>
+            <div class="tool-separator master-only"></div>
+            <div class="tool-stack master-only">
+                <button class="tool-button" data-tool="token" title="Token"><span>◉</span><small>Token</small></button>
+                <button class="tool-button" data-tool="tile" title="Tile / imagem"><span>▧</span><small>Tile</small></button>
+                <button class="tool-button" data-tool="wall" title="Paredes e portas"><span>╱</span><small>Parede</small></button>
+                <button class="tool-button" data-tool="light" title="Iluminação"><span>☼</span><small>Luz</small></button>
+                <button class="tool-button" data-tool="sound" title="Som ambiente"><span>♫</span><small>Som</small></button>
+                <button class="tool-button" data-tool="note" title="Nota no mapa"><span>◆</span><small>Nota</small></button>
+                <button class="tool-button" data-tool="region" title="Região"><span>▱</span><small>Região</small></button>
+                <button class="tool-button" data-tool="fog" title="Fog of War"><span>◐</span><small>Fog</small></button>
+                <button class="tool-button" data-tool="fx" title="Efeito / destaque"><span>✦</span><small>FX</small></button>
+            </div>
+        </aside>
+
+        <section class="canvas-shell" id="canvas-shell">
+            <div class="tool-options" id="tool-options"></div>
+            <div class="scene-empty" id="scene-empty">
+                <div class="scene-empty-mark">V</div>
+                <p class="eyebrow">Sala da Crônica</p>
+                <h1>Nenhuma cena aberta</h1>
+                <p id="scene-empty-copy">O Mestre ainda não ativou uma cena.</p>
+                <button class="primary-button master-only" id="empty-add-scene" type="button">Criar primeira cena</button>
+            </div>
+
+            <div class="viewport" id="viewport" tabindex="0" aria-label="Canvas da cena">
+                <div class="stage" id="stage">
+                    <div class="scene-background" id="scene-background"></div>
+                    <div class="grid-layer" id="grid-layer"></div>
+                    <div class="tile-layer under" id="tile-under-layer"></div>
+                    <svg class="drawing-layer" id="drawing-layer"></svg>
+                    <div class="region-layer" id="region-layer"></div>
+                    <div class="token-layer" id="token-layer"></div>
+                    <div class="tile-layer over" id="tile-over-layer"></div>
+                    <div class="scene-foreground" id="scene-foreground"></div>
+                    <div class="note-layer" id="note-layer"></div>
+                    <svg class="wall-layer master-layer" id="wall-layer"></svg>
+                    <div class="door-layer" id="door-layer"></div>
+                    <div class="gm-layer master-layer" id="gm-layer"></div>
+                    <canvas class="lighting-layer" id="lighting-layer"></canvas>
+                    <canvas class="fog-layer" id="fog-layer"></canvas>
+                    <svg class="measure-layer" id="measure-layer"></svg>
+                    <div class="ping-layer" id="ping-layer"></div>
+                    <div class="weather-layer" id="weather-layer"></div>
+                    <div class="cursor-layer" id="cursor-layer"></div>
+                </div>
+            </div>
+
+            <div class="canvas-hud top-left">
+                <span class="scene-chip" id="active-scene-label">SEM CENA</span>
+                <span class="scene-chip muted" id="scene-coordinates">x 0 • y 0</span>
+            </div>
+            <div class="canvas-hud bottom-left">
+                <button class="hud-button" id="zoom-out" type="button">−</button>
+                <span id="zoom-label">100%</span>
+                <button class="hud-button" id="zoom-in" type="button">＋</button>
+                <button class="hud-button" id="zoom-fit" type="button">Ajustar</button>
+            </div>
+            <div class="canvas-hud bottom-right">
+                <button class="hud-button master-only" id="player-view" type="button">Visão do jogador</button>
+                <button class="hud-button" id="center-scene" type="button">Centralizar</button>
+            </div>
+
+            <div class="pause-overlay" id="pause-overlay" hidden>
+                <div class="pause-symbol">Ⅱ</div>
+                <strong>MESA PAUSADA</strong>
+                <span>O Mestre interrompeu a ação.</span>
+            </div>
+
+            <div class="dice-overlay" id="dice-overlay" hidden></div>
+
+            <div class="cutscene-overlay" id="cutscene-overlay" hidden>
+                <video id="cutscene-video" playsinline preload="auto"></video>
+                <button class="cutscene-play-fallback" id="cutscene-play-fallback" type="button" hidden>▶ Reproduzir Cutscene</button>
+                <div class="cutscene-hud">
+                    <div><p class="eyebrow">CUTSCENE</p><strong id="cutscene-active-title">Apresentação</strong></div>
+                    <div class="cutscene-controls master-only">
+                        <button class="ghost-button" id="cutscene-pause" type="button">Pausar Cutscene</button>
+                        <button class="danger-button" id="cutscene-end" type="button">Encerrar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="directory-sidebar" id="directory-sidebar">
+            <nav class="directory-tabs" aria-label="Diretórios">
+                <button class="directory-tab active" data-directory="chat" title="Chat">⌁</button>
+                <button class="directory-tab" data-directory="combat" title="Combate">⚔</button>
+                <button class="directory-tab" data-directory="scenes" title="Cenas">▣</button>
+                <button class="directory-tab" data-directory="actors" title="Personagens e NPCs">◉</button>
+                <button class="directory-tab" data-directory="items" title="Itens">◇</button>
+                <button class="directory-tab" data-directory="journal" title="Diário e Handouts">≡</button>
+                <button class="directory-tab" data-directory="tables" title="Tabelas">⌗</button>
+                <button class="directory-tab" data-directory="cards" title="Cartas">▤</button>
+                <button class="directory-tab" data-directory="playlists" title="Playlists">♫</button>
+                <button class="directory-tab" data-directory="cutscenes" title="Cutscenes">▶</button>
+                <button class="directory-tab" data-directory="compendium" title="Compêndio">⌘</button>
+                <button class="directory-tab" data-directory="settings" title="Configurações">⚙</button>
+            </nav>
+
+            <div class="directory-content">
+                <section class="directory-pane active" data-directory-pane="chat">
+                    <header class="directory-header"><div><p class="eyebrow">Comunicação</p><h2>Chat & Dados</h2></div><div class="header-actions"><button class="mini-button" id="open-dice" type="button">⚄ Rolar</button><button class="mini-button" id="export-chat" type="button" title="Exportar chat">↓</button></div></header>
+                    <div class="chat-filters"><button class="filter-chip active" data-chat-filter="all">Tudo</button><button class="filter-chip" data-chat-filter="general">Conversa</button><button class="filter-chip" data-chat-filter="rolls">Rolagens</button><button class="filter-chip" data-chat-filter="whisper">Privado</button></div>
+                    <div class="chat-log" id="chat-log"></div>
+                    <form class="chat-compose" id="chat-form">
+                        <div class="chat-compose-meta"><select id="chat-channel"><option value="general">Geral</option><option value="whisper">Sussurro</option><option value="notes">Nota</option></select><select id="chat-recipient" hidden></select></div>
+                        <div class="chat-input-row"><textarea id="chat-input" rows="1" placeholder="Fale com a mesa..."></textarea><button class="send-button" type="submit">↑</button></div>
+                    </form>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="combat">
+                    <header class="directory-header"><div><p class="eyebrow">Turn Tracker</p><h2>Encontros</h2></div><button class="mini-button master-only" id="new-encounter" type="button">＋</button></header>
+                    <div id="combat-list" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="scenes">
+                    <header class="directory-header"><div><p class="eyebrow">Scene Directory</p><h2>Cenas</h2></div><div class="header-actions master-only"><button class="mini-button" id="new-scene-folder" type="button" title="Nova pasta">▱</button><button class="mini-button" id="new-scene-side" type="button">＋</button></div></header>
+                    <input class="directory-search" id="scene-search" placeholder="Buscar cenas...">
+                    <div id="scene-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="actors">
+                    <header class="directory-header"><div><p class="eyebrow">Actors</p><h2>Personagens</h2></div></header>
+                    <input class="directory-search" id="actor-search" placeholder="Buscar personagem ou NPC...">
+                    <div id="actor-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="items">
+                    <header class="directory-header"><div><p class="eyebrow">Items</p><h2>Itens</h2></div><button class="mini-button master-only" id="new-item" type="button">＋</button></header>
+                    <input class="directory-search" id="item-search" placeholder="Buscar itens...">
+                    <div id="item-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="journal">
+                    <header class="directory-header"><div><p class="eyebrow">Journal</p><h2>Diário & Handouts</h2></div><button class="mini-button master-only" id="new-journal" type="button">＋</button></header>
+                    <input class="directory-search" id="journal-search" placeholder="Buscar registros...">
+                    <div id="journal-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="tables">
+                    <header class="directory-header"><div><p class="eyebrow">Rollable Tables</p><h2>Tabelas</h2></div><button class="mini-button master-only" id="new-table" type="button">＋</button></header>
+                    <div id="table-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="cards">
+                    <header class="directory-header"><div><p class="eyebrow">Cards</p><h2>Baralhos</h2></div><button class="mini-button master-only" id="new-deck" type="button">＋</button></header>
+                    <div id="deck-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="playlists">
+                    <header class="directory-header"><div><p class="eyebrow">Jukebox</p><h2>Playlists & Ambiente</h2></div><button class="mini-button master-only" id="new-media" type="button">＋</button></header>
+                    <div class="volume-stack">
+                        <label>Playlists <input id="playlist-volume" type="range" min="0" max="1" step=".05" value=".7"></label>
+                        <label>Ambiente <input id="ambient-volume" type="range" min="0" max="1" step=".05" value=".7"></label>
+                        <label>Interface <input id="interface-volume" type="range" min="0" max="1" step=".05" value=".65"></label>
+                    </div>
+                    <div id="active-media-player" class="active-media-player" hidden></div>
+                    <div id="media-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="cutscenes">
+                    <header class="directory-header"><div><p class="eyebrow">Direção</p><h2>Cutscenes</h2></div><button class="mini-button master-only" id="new-cutscene" type="button">＋</button></header>
+                    <p class="directory-help">Envie um vídeo do seu PC e substitua a cena para todos os jogadores durante a reprodução.</p>
+                    <div id="cutscene-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="compendium">
+                    <header class="directory-header"><div><p class="eyebrow">Compendium</p><h2>Referência V5</h2></div></header>
+                    <input class="directory-search" id="compendium-search" placeholder="Buscar referência...">
+                    <div id="compendium-directory" class="directory-list"></div>
+                </section>
+
+                <section class="directory-pane" data-directory-pane="settings">
+                    <header class="directory-header"><div><p class="eyebrow">Configuração</p><h2>Mesa</h2></div></header>
+                    <div id="settings-pane" class="settings-stack"></div>
+                </section>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="macro-hotbar" id="macro-hotbar">
+        <button class="hotbar-page" id="hotbar-prev" type="button">‹</button>
+        <div class="hotbar-slots" id="hotbar-slots"></div>
+        <button class="hotbar-page" id="hotbar-next" type="button">›</button>
+        <button class="hotbar-config" id="new-macro" type="button" title="Criar macro">＋ Macro</button>
+    </footer>
+</div>
+
+<aside class="object-inspector" id="object-inspector" hidden>
+    <header><div><p class="eyebrow">Inspector</p><h3 id="inspector-title">Objeto</h3></div><button id="close-inspector" type="button">×</button></header>
+    <div id="inspector-content"></div>
+</aside>
+
+<div class="context-menu" id="context-menu" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<dialog class="vtt-dialog" id="form-dialog">
+    <form method="dialog" id="dynamic-form">
+        <header class="dialog-header"><div><p class="eyebrow" id="dialog-eyebrow">ELYSIUM</p><h2 id="dialog-title">Configuração</h2></div><button class="dialog-close" value="cancel" type="submit">×</button></header>
+        <div class="dialog-body" id="dialog-body"></div>
+        <footer class="dialog-actions"><button class="ghost-button" value="cancel" type="submit">Cancelar</button><button class="primary-button" id="dialog-submit" value="default" type="submit">Salvar</button></footer>
+    </form>
+</dialog>
+
+<dialog class="vtt-dialog compact" id="dice-dialog">
+    <form method="dialog" id="dice-form">
+        <header class="dialog-header"><div><p class="eyebrow">Vampiro V5</p><h2>Rolagem</h2></div><button class="dialog-close" value="cancel" type="submit">×</button></header>
+        <div class="dialog-body">
+            <label>Personagem<select id="dice-character"><option value="">Rolagem livre</option></select></label>
+            <div class="field-grid two"><label>Pool<input id="dice-pool" type="number" min="1" max="50" value="5"></label><label>Fome<input id="dice-hunger" type="number" min="0" max="5" value="1"></label></div>
+            <div class="field-grid two"><label>Modificador<input id="dice-modifier" type="number" min="-20" max="20" value="0"></label><label>Dificuldade<input id="dice-difficulty" type="number" min="1" max="20" placeholder="Opcional"></label></div>
+            <label class="check-line master-only"><input id="dice-secret" type="checkbox"> Rolagem secreta do Mestre</label>
+        </div>
+        <footer class="dialog-actions"><button class="ghost-button" value="cancel" type="submit">Cancelar</button><button class="primary-button" id="dice-submit" value="default" type="submit">Rolar dados</button></footer>
+    </form>
+</dialog>
+
+<dialog class="vtt-dialog sheet-dialog" id="viewer-dialog">
+    <header class="dialog-header"><div><p class="eyebrow" id="viewer-eyebrow">Registro</p><h2 id="viewer-title">Detalhes</h2></div><button class="dialog-close" id="viewer-close" type="button">×</button></header>
+    <div class="dialog-body prose" id="viewer-body"></div>
+</dialog>
+
+<script type="module" src="../js/vtt.js"></script>
+</body>
+</html>

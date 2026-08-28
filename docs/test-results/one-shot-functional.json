@@ -1,0 +1,251 @@
+{
+  "passed": 49,
+  "total": 49,
+  "results": [
+    {
+      "name": "Cadastro do Mestre",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cadastro do Jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cadastro de terceiro usuário",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Upload local de imagem da cena",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Upload local de imagem de token/tile",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Upload local de vídeo de Cutscene",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Upload local de áudio",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Criação da Crônica com banner local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Convite de jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Entrada do jogador por convite",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Usuário externo bloqueado da mesa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Ficha do jogador com avatar local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cena VTT criada e ativada com imagem local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Token, tile e parede adicionados pelo Mestre",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Parede bloqueia movimento do token no servidor",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador move o próprio token quando caminho está livre",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Pausa da mesa impede movimento de jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador usa Lápis e cria desenho",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Borracha apaga desenho do próprio jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não apaga parede do Mestre",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não apaga desenho de outro jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mestre pode apagar desenho de qualquer jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador cria e apaga o próprio ping imediatamente",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não apaga ping alheio",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não altera Fog global",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Fog individual do jogador é persistido",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Rolagem V5 usa exclusivamente d10 (1–10)",
+      "ok": true,
+      "detail": "[6, 8, 7, 9, 7, 5]"
+    },
+    {
+      "name": "Fome da ficha substitui dados normais corretamente",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Resultado público entra no chat de rolagens",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Última rolagem fica disponível para destaque visual sincronizado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Rolagem secreta do Mestre não aparece ao jogador",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Limpar marcações remove desenhos",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Limpar marcações remove paredes",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Limpar marcações remove notas do mapa",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Limpar marcações remove regiões",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Limpar marcações remove pings",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Limpar marcações preserva tokens preparados",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Limpar marcações preserva tiles preparados",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Cutscene salva com vídeo local",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Jogador não pode lançar Cutscene",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Lançar Cutscene substitui a cena via estado sincronizado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Posição da Cutscene avança enquanto toca",
+      "ok": true,
+      "detail": "1.55"
+    },
+    {
+      "name": "Pausa Cutscene devolve cenário e preserva posição",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Retomar Cutscene continua do ponto pausado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Encerrar Cutscene devolve definitivamente o cenário",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Fim natural do vídeo usa encerramento sincronizado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bootstrap VTT mantém Cutscenes na biblioteca",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bootstrap informa papel e permissões do Mestre",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bootstrap do jogador restringe administração",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}
